@@ -1,14 +1,14 @@
-# Publish Subscriber, estar subscripto a actualizaciones de cada modulo
-
-
-configed_wires = ['R', 'W', 'BLK', 'BLU']
-amount_wires = len(configed_wires)
+configured_wires = ['R', 'W', 'BLK', 'BLU']
+amount_wires = len(configured_wires)
 serial_number = 123456
+
 
 def wires_module(wires, serNumb):
 
-    configed_wires = wires
+    configured_wires = wires
+    amount_wires = len(configured_wires)
     serial_number = serNumb
+
 
 def wire_was_cut(cut_wire):
 
@@ -75,7 +75,7 @@ def wires_module_six_cables(cut_wire):
 def no_wires(letter):
 
     no_red = True
-    for wire in configed_wires:
+    for wire in configured_wires:
         if wire == letter:
             no_red = False
     return no_red
@@ -83,13 +83,13 @@ def no_wires(letter):
 
 def last_wire(letter):
 
-    return configed_wires[amount_wires - 1] == letter
+    return configured_wires[amount_wires - 1] == letter
 
 
 def more_than_one_wire(letter):
 
     count = 0
-    for wire in configed_wires:
+    for wire in configured_wires:
         if wire == letter:
             count = count + 1
     return count > 1
@@ -102,8 +102,8 @@ def last_digit_serial_number_is_odd():
 
 def exactly_one_wire(letter):
 
-    count = 0;
-    for wire in configed_wires:
+    count = 0
+    for wire in configured_wires:
         if wire == letter:
             count = count + 1
     return count == 1
@@ -112,7 +112,7 @@ def exactly_one_wire(letter):
 def position_of_last_wire(letter):
 
     count = amount_wires - 1
-    for x in reversed(configed_wires):
+    for x in reversed(configured_wires):
         if x == letter:
             return count
         else:
