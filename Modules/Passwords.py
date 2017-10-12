@@ -1,4 +1,4 @@
-class PasswordsClass:
+class Passwords:
 
     def __init__(self, correct_password):
         self.password = correct_password
