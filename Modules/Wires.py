@@ -3,11 +3,11 @@ amount_wires = len(configured_wires)
 serial_number = 123456
 
 
-def wires_module(wires, serNumb):
+def wires_module(wires, ser_numb):
 
     configured_wires = wires
     amount_wires = len(configured_wires)
-    serial_number = serNumb
+    serial_number = ser_numb
 
 
 def wire_was_cut(cut_wire):
