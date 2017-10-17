@@ -1,10 +1,12 @@
+import Modules.Constants as consts
+
 class Wires:
 
     def __init__(self, wires, serNumb):
         # self.configured_wires = wires
         # self.amount_wires = len(wires)
         # self.serial_number = serNumb
-        self.configured_wires = ['R', 'W', 'BLK', 'BLU']
+        self.configured_wires = [consts.red, consts.white, consts.black, consts.blue]
         self.amount_wires = len(self.configured_wires)
         self.serial_number = 123456
 
@@ -21,46 +23,46 @@ class Wires:
 
     def wires_module_three_cables(self, cut_wire):
 
-        if self.no_wires('R'):
+        if self.no_wires(consts.red):
             return cut_wire == 1
-        elif self.last_wire('W'):
+        elif self.last_wire(consts.white):
             return cut_wire == self.amount_wires - 1
-        elif self.more_than_one_wire('BLU'):
-            return cut_wire == self.position_of_last_wire('BLU')
+        elif self.more_than_one_wire(consts.blue):
+            return cut_wire == self.position_of_last_wire(consts.blue)
         else:
             return cut_wire == self.amount_wires - 1
 
     def wires_module_four_cables(self, cut_wire):
 
-        if self.more_than_one_wire('R') and self.last_digit_serial_number_is_odd():
-            return cut_wire == self.position_of_last_wire('R')
-        elif self.last_wire('Y') and self.no_wires('R'):
+        if self.more_than_one_wire(consts.red) and self.last_digit_serial_number_is_odd():
+            return cut_wire == self.position_of_last_wire(consts.red)
+        elif self.last_wire(consts.yellow) and self.no_wires(consts.red):
             return cut_wire == 0
-        elif self.exactly_one_wire('BLU'):
+        elif self.exactly_one_wire(consts.blue):
             return cut_wire == 0
-        elif self.more_than_one_wire('Y'):
+        elif self.more_than_one_wire(consts.yellow):
             return cut_wire == self.amount_wires - 1
         else:
             return cut_wire == 1
 
     def wires_module_five_cables(self, cut_wire):
 
-        if self.last_wire('BLK') and self.last_digit_serial_number_is_odd():
+        if self.last_wire(consts.black) and self.last_digit_serial_number_is_odd():
             return cut_wire == 3
-        elif self.exactly_one_wire('R') and self.more_than_one_wire('Y'):
+        elif self.exactly_one_wire(consts.red) and self.more_than_one_wire(consts.yellow):
             return cut_wire == 0
-        elif self.no_wires('BLK'):
+        elif self.no_wires(consts.black):
             return cut_wire == 1
         else:
             return cut_wire == 0
 
     def wires_module_six_cables(self, cut_wire):
 
-        if self.no_wires('Y') and self.last_digit_serial_number_is_odd():
+        if self.no_wires(consts.yellow) and self.last_digit_serial_number_is_odd():
             return cut_wire == 2
-        elif self.exactly_one_wire('Y') and self.more_than_one_wire('W'):
+        elif self.exactly_one_wire(consts.yellow) and self.more_than_one_wire(consts.white):
             return cut_wire == 3
-        elif self.no_wires('R'):
+        elif self.no_wires(consts.red):
             return cut_wire == self.amount_wires - 1
         else:
             return cut_wire == 3
