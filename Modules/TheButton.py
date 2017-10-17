@@ -5,16 +5,16 @@ import Modules.Constants as consts
 
 class TheButton:
     def __init__(self, color, text, batteries, indicators, strip):
-        # self.button_color = color
-        # self.button_says = text
-        # self.amount_batteries = batteries
-        # self.lit_indicators = indicators
-        # self.strip_color = strip
-        self.button_color = 'BLU'
-        self.strip_color = 'BLU'
-        self.button_says = 'ABORT'
-        self.amount_batteries = 1
-        self.lit_indicators = ['CAR']
+        self.button_color = color
+        self.button_says = text
+        self.amount_batteries = batteries
+        self.lit_indicators = indicators
+        self.strip_color = strip
+        # self.button_color = 'BLU'
+        # self.strip_color = 'BLU'
+        # self.button_says = 'ABORT'
+        # self.amount_batteries = 1
+        # self.lit_indicators = ['CAR']
         self.holding = False
 
     def the_button_was_handled(self, action, current_countdown):

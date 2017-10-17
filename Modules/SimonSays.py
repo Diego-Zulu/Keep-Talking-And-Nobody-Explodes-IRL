@@ -1,17 +1,19 @@
 
 import Modules.Constants as consts
 
+
 class SimonSays:
 
-    def __init__(self, numb):
+    def __init__(self, numb, to_flash):
         self.ser_numb = numb
+        self.flashed = to_flash
 
-    def check_correct_press(self, pressed, flashed, strikes):
+    def check_correct_press(self, pressed, strikes):
 
         if self.contains_vowel(self.ser_numb):
-            self.check_vowel_presses(pressed, flashed, strikes)
+            self.check_vowel_presses(pressed, self.flashed, strikes)
         else:
-            self.check_no_vowel_presses(pressed, flashed, strikes)
+            self.check_no_vowel_presses(pressed, self.flashed, strikes)
 
     def contains_vowel(self, numb):
 

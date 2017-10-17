@@ -4,10 +4,10 @@ from multiprocessing import Process
 
 class CountDownTimer:
 
-    def __init__(self, time):
-        self.start_time = time
-        self.actual_time = time
-        self.formatted_time = self.format_time(time)
+    def __init__(self, time_in_seconds):
+        self.start_time = time_in_seconds
+        self.actual_time = time_in_seconds
+        self.formatted_time = self.format_time(time_in_seconds)
         p1 = Process(target=self.countdown())
         p1.start()
 

@@ -3,12 +3,12 @@ import Modules.Constants as consts
 class Wires:
 
     def __init__(self, wires, serNumb):
-        # self.configured_wires = wires
-        # self.amount_wires = len(wires)
-        # self.serial_number = serNumb
-        self.configured_wires = [consts.red, consts.white, consts.black, consts.blue]
-        self.amount_wires = len(self.configured_wires)
-        self.serial_number = 123456
+        self.configured_wires = wires
+        self.amount_wires = len(wires)
+        self.serial_number = serNumb
+        # self.configured_wires = [consts.red, consts.white, consts.black, consts.blue]
+        # self.amount_wires = len(self.configured_wires)
+        # self.serial_number = 123456
 
     def wire_was_cut(self, cut_wire):
 
@@ -89,7 +89,7 @@ class Wires:
 
     def last_digit_serial_number_is_odd(self):
 
-        return self.serial_number % 2 != 0
+        return (ord(self.serial_number[-1]) - ord('0')) % 2 != 0
 
     def exactly_one_wire(self, letter):
 
