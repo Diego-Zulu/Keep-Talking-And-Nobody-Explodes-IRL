@@ -1,6 +1,8 @@
+#include <LinkedList.h>
 #include <Wire.h>
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
+
 
 #define I2C_ADDR    0x3F
 #define BACKLIGHT_PIN     3
@@ -20,10 +22,12 @@
 #define FREQUENCIES 16
 
 #define dotLen 400     // length of the morse code 'dot'
-#define dashLen 800    // length of the morse code 'dash'
+#define dashLen 900    // length of the morse code 'dash'
 #define elemPause 400  // length of the pause between elements of a character
-#define Spaces 800    // length of the spaces between characters
-#define wordPause 2400  // length of the pause between words
+#define Spaces 900    // length of the spaces between characters
+#define wordPause 2500  // length of the pause between words
+#define lcd_print_delay 100
+#define time_between_delays 50
 
 
 LiquidCrystal_I2C  lcd(I2C_ADDR, En_pin, Rw_pin, Rs_pin, D4_pin, D5_pin, D6_pin, D7_pin);
@@ -42,44 +46,12 @@ String correct = "3.552 MHz";
 
 bool won = false;
 
-
-void shineChar(char c) {
-
-  if (c == '-') {
-    MorseDash();
-    LightsOff(elemPause);
-  } else if (c == '.') {
-    MorseDot();
-    LightsOff(elemPause);
-  } else {
-    LightsOff(Spaces);
-  }
-}
-
-// DOT
-void MorseDot()
-{
-  digitalWrite(CODE_LED, HIGH);    // turn the LED on
-  delay(dotLen);              // hold in this position
-}
-
-// DASH
-void MorseDash()
-{
-  digitalWrite(CODE_LED, HIGH);    // turn the LED on
-  delay(dashLen);               // hold in this position
-}
-
-// Turn Off
-void LightsOff(int delayTime)
-{
-  digitalWrite(CODE_LED, LOW);    // turn the LED off
-  delay(delayTime);             // hold in this position
-}
+LinkedList<String> *buttonsQueue = new LinkedList<String>();
+LinkedList<String> *morseQueue = new LinkedList<String>();
 
 void setup()
 {
-  Serial.begin(9600);
+
   lcd.begin (16, 2);
   lcd.setBacklightPin(BACKLIGHT_PIN, POSITIVE);
   lcd.setBacklight(HIGH);
@@ -93,20 +65,116 @@ void setup()
 
   printToLcd(words[0]);
 
+  buttonsQueue->add("CHECK");
+  morseQueue->add("CHAR");
+  morseQueue->add(String(0));
 }
 
-static int DoTheMorse() {
-  if (!won) {
+void loop()
+{
 
-    for (int i = 0; !won && code[i] != "\0"; i++)
-    {
+  ConsumeMorseQueue();
+  ConsumeCheckButtonsQueue();
+}
 
-      char tmpChar = code[i];
-      shineChar(tmpChar);
+void ConsumeMorseQueue() {
+  if (morseQueue->size() > 0) {
+    String action = morseQueue->shift();
+
+    if (action == "LIGHTSOFF") {
+      String lightsOfTime = morseQueue->shift();
+      int t = lightsOfTime.toInt();
+      LightsOff(t);
+
+    } else if (action == "CHAR") {
+      String charPos = morseQueue->shift();
+      int pos = charPos.toInt();
+      char tmpChar = code[pos];
+      if (tmpChar == '\0') {
+        pos = -1;
+        LightsOff(wordPause);
+      } else {
+        shineChar(tmpChar);
+      }
+      morseQueue->add("CHAR");
+      morseQueue->add(String(pos + 1));
+
+    } else if (action == "DELAY") {
+      doTinyDelayAndReque(morseQueue);
     }
 
-    LightsOff(wordPause);
+
   }
+}
+
+void ConsumeCheckButtonsQueue() {
+
+  if (buttonsQueue->size() > 0) {
+    String action = buttonsQueue->shift();
+
+    if (action == "CHECK") {
+      buttonsQueue->add("CHECK");
+      checkButtons();
+    } else if (action == "DELAY") {
+
+      doTinyDelayAndReque(buttonsQueue);
+
+    }
+  }
+}
+
+void doTinyDelayAndReque(LinkedList<String>* list) {
+  String delayTime = list->shift();
+  
+  int t = delayTime.toInt();
+
+  delay(time_between_delays);
+  t -= time_between_delays;
+
+  if (t > 0) {
+    list->unshift(String(t));
+    list->unshift("DELAY");
+  }
+}
+
+void shineChar(char c) {
+
+  if (c == '-') {
+    MorseDash();
+  } else if (c == '.') {
+    MorseDot();
+  } else {
+    LightsOff(Spaces);
+  }
+}
+
+// DOT
+void MorseDot()
+{
+  digitalWrite(CODE_LED, HIGH);    // turn the LED on
+  addDelay(morseQueue, dotLen);              // hold in this position
+  addLightsOffDelay(elemPause);
+  //LightsOff(elemPause);
+}
+
+// DASH
+void MorseDash()
+{
+  digitalWrite(CODE_LED, HIGH);    // turn the LED on
+  addDelay(morseQueue, dashLen);               // hold in this position
+  addLightsOffDelay(elemPause);
+}
+
+void addLightsOffDelay(int t) {
+  morseQueue->add("LIGHTSOFF");
+  morseQueue->add(String(t)); 
+}
+
+// Turn Off
+void LightsOff(int delayTime)
+{
+  digitalWrite(CODE_LED, LOW);    // turn the LED off
+  addDelay(morseQueue, delayTime);             // hold in this position
 }
 
 static int checkButtons() {
@@ -118,7 +186,7 @@ static int checkButtons() {
         pos = 0;
       } else {
         printToLcd(words[pos]);
-        delay(300);
+        addDelay(buttonsQueue, lcd_print_delay);
       }
 
 
@@ -129,29 +197,25 @@ static int checkButtons() {
         pos = FREQUENCIES - 1;
       } else {
         printToLcd(words[pos]);
-        delay(300);
+        addDelay(buttonsQueue, lcd_print_delay);
       }
-
-
-      //WIN
     } else if (digitalRead(ACCEPT_BTN) == 0) {
       digitalWrite(BIG_LED, HIGH);
       won = true;
+      buttonsQueue->clear();
+      morseQueue->clear();
     }
   }
 }
 
-void loop()
-{
-
-  ConsumeList();
-  checkButtons();
+void addDelay(LinkedList<String>* list, int t) {
+  list->unshift(String(t));
+  list->unshift("DELAY");
 }
 
 
-
 void printToLcd(String message) {
-  Serial.println(message);
+
   lcd.clear();
   lcd.print("   " + message + "   ");
 }
