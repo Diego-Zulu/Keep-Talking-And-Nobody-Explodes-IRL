@@ -37,6 +37,11 @@ String words[FREQUENCIES] = {"3.505 MHz", "3.515 MHz", "3.522 MHz", "3.532 MHz",
                              "3.572 MHz", "3.575 MHz", "3.582 MHz", "3.592 MHz", "3.595 MHz", "3.600 MHz"
                             };
 
+String tuner[FREQUENCIES] = {"|..!..!..!..!..!", "!|.!..!..!..!..!","!.|!..!..!..!..!","!..|..!..!..!..!",
+                            "!..!|.!..!..!..!","!..!.|!..!..!..!","!..!..|..!..!..!","!..!..!|.!..!..!",
+                             "!..!..!.|!..!..!","!..!..!..|..!..!","!..!..!..!|.!..!","!..!..!..!.|!..!",
+                             "!..!..!..!..|..!","!..!..!..!..!|.!","!..!..!..!..!.|!","!..!..!..!..!..|",};
+
 
 int pos = 0;
 
@@ -63,7 +68,7 @@ void setup()
   pinMode(CODE_LED, OUTPUT);
   pinMode(BIG_LED, OUTPUT);
 
-  printToLcd(words[0]);
+  printFreqToLcd(0);
 
   buttonsQueue->add("CHECK");
   morseQueue->add("CHAR");
@@ -132,8 +137,7 @@ void doTinyDelayAndReque(LinkedList<String>* list) {
   t -= time_between_delays;
 
   if (t > 0) {
-    list->unshift(String(t));
-    list->unshift("DELAY");
+    addDelay(list, t);
   }
 }
 
@@ -185,7 +189,7 @@ static int checkButtons() {
       if (pos < 0) {
         pos = 0;
       } else {
-        printToLcd(words[pos]);
+        printFreqToLcd(pos);
         addDelay(buttonsQueue, lcd_print_delay);
       }
 
@@ -196,7 +200,7 @@ static int checkButtons() {
       if (pos >= FREQUENCIES) {
         pos = FREQUENCIES - 1;
       } else {
-        printToLcd(words[pos]);
+        printFreqToLcd(pos);
         addDelay(buttonsQueue, lcd_print_delay);
       }
     } else if (digitalRead(ACCEPT_BTN) == 0) {
@@ -214,10 +218,13 @@ void addDelay(LinkedList<String>* list, int t) {
 }
 
 
-void printToLcd(String message) {
+void printFreqToLcd(int pos) {
 
+  lcd.setCursor(0,0);
   lcd.clear();
-  lcd.print("   " + message + "   ");
+  lcd.print(tuner[pos]);
+  lcd.setCursor(0,1);
+  lcd.print("   " + words[pos] + "   ");
 }
 
 
