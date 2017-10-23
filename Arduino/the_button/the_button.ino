@@ -1,9 +1,10 @@
-#include <TrueRandom.h>
 #include <LinkedList.h>
 #include <Wire.h>
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
 
+#define SDA_PIN 0
+#define SCL_PIN 2
 
 #define I2C_ADDR    0x3F
 #define BACKLIGHT_PIN     3
@@ -58,8 +59,6 @@ int button_color[] = {0, 0, 0};
 
 int strip_color[] = {0, 0, 0};
 
-int randomColor[] = {0, 0, 0};
-
 String button_action_status;
 
 bool won;
@@ -80,9 +79,6 @@ void setup()
 
   printToLcd(button_text);
 
-  randomColor[0] = TrueRandom.random(0, 256);
-  randomColor[1] = TrueRandom.random(0, 256);
-  randomColor[2] = TrueRandom.random(0, 256);
 
   copyColorArray(white, button_color);
   copyColorArray(red, strip_color);
