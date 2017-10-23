@@ -15,31 +15,54 @@
 #define D6_pin  6
 #define D7_pin  7
 
-#define STRIP_LED_BLUE 2
-#define STRIP_LED_GREEN 3
-#define STRIP_LED_RED 4
+#define STRIP_LED_BLUE 3
+#define STRIP_LED_GREEN 5
+#define STRIP_LED_RED 6
 
-#define BUTTON_LED_BLUE 5
-#define BUTTON_LED_GREEN 6
-#define BUTTON_LED_RED 7
+#define BUTTON_LED_BLUE 9
+#define BUTTON_LED_GREEN 10
+#define BUTTON_LED_RED 11
 
-#define BUTTON 8
-#define VICTORY_LED 9
+#define BUTTON 12
+#define VICTORY_LED 13
+
+#define HOLD_TIME 300
+
+#define YELLOW_CODE "Y"
+#define WHITE_CODE "W"
+#define GREEN_CODE "G"
+#define RED_CODE "R"
+#define BLUE_CODE "BLU"
 
 LiquidCrystal_I2C  lcd(I2C_ADDR, En_pin, Rw_pin, Rs_pin, D4_pin, D5_pin, D6_pin, D7_pin);
 
 String button_text = "ABORT";
 
-int blue[] = {0, 0, 255};
 int red[] = {255, 0, 0};
+int orange[] = {255, 128, 0};
 int yellow[] = {255, 255, 0};
+int green_yellow[] = {128, 255, 0};
+int green[] = {0, 255, 0};
+int green_blue[] = {0, 255, 128};
+int skyblue[] = {0, 255, 255};
+int darker_skyblue[] = {0, 128, 255};
+int blue[] = {0, 0, 255};
+int purple[] = {127, 0, 255};
+int pink[] = {255, 0, 255};
+int magenta[] = {255, 0, 127};
+int grey[] = {128, 128, 128};
 int white[] = {255, 255, 255};
+int off[] = {0, 0, 0};
 
 int button_color[] = {0, 0, 0};
 
 int strip_color[] = {0, 0, 0};
 
 int randomColor[] = {0, 0, 0};
+
+String button_action_status;
+
+bool won;
 
 void setup()
 {
@@ -53,12 +76,6 @@ void setup()
 
   pinMode(BUTTON, INPUT_PULLUP);
 
-  pinMode(STRIP_LED_BLUE, OUTPUT);
-  pinMode(STRIP_LED_GREEN, OUTPUT);
-  pinMode(STRIP_LED_RED, OUTPUT);
-  pinMode(BUTTON_LED_BLUE, OUTPUT);
-  pinMode(BUTTON_LED_GREEN, OUTPUT);
-  pinMode(BUTTON_LED_RED, OUTPUT);
   pinMode(VICTORY_LED, OUTPUT);
 
   printToLcd(button_text);
@@ -67,46 +84,54 @@ void setup()
   randomColor[1] = TrueRandom.random(0, 256);
   randomColor[2] = TrueRandom.random(0, 256);
 
-  copyColorArray(button_color, white);
-  copyColorArray(strip_color, randomColor);
+  copyColorArray(white, button_color);
+  copyColorArray(red, strip_color);
 
-  setColor("BUTTON", red);
-  setColor("STRIP", blue);
+  setColor("BUTTON", button_color);
+
+  button_action_status = "";
+
+  won = false;
 }
 
 void loop()
 {
-
-
+  if (!won) {
+    if (digitalRead(BUTTON) == LOW && button_action_status == "") {
+      delay(HOLD_TIME);
+      
+      if (digitalRead(BUTTON) == LOW) {
+        button_action_status = "HOLD";
+        setColor("STRIP", strip_color);
+        Serial.println(button_action_status);
+      } else {
+        button_action_status = "PRESS";
+        Serial.println(button_action_status);
+      }
+    } else if (digitalRead(BUTTON) == HIGH && button_action_status == "HOLD") {
+      button_action_status = "RELEASE";
+      Serial.println(button_action_status);
+    }
+  }
 }
 
 
 void printToLcd(String message) {
 
   lcd.clear();
-  String centered = wordCenteredForLcd(message);
-
-  Serial.println(centered);
-  lcd.print(centered);
+  lcd.setCursor(printHereToCenter(message), 0);
+  lcd.print(message);
 
 
 }
 
-String wordCenteredForLcd(String message) {
+int printHereToCenter(String message) {
 
   int messageLength = message.length();
   int emptySpaces = 16 - messageLength;
   int halfEmpty = emptySpaces/2;
 
-  while (emptySpaces > halfEmpty) {
-    message = " " + message;
-    emptySpaces--;
-  }
-
-  while (emptySpaces > 0) {
-    message = message + " ";
-    emptySpaces--;
-  }
+  return halfEmpty;
 }
 
 void copyColorArray(int base[], int result[]) {
