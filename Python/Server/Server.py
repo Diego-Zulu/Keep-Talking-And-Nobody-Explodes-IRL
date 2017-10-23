@@ -7,7 +7,7 @@ while(not(salir)):
     p = input()
     if p == "1":
         game = Game()
-        game.connect("192.168.2.150")
+        game.connect("192.168.43.204")
         game.start()
         salirJuego = False
         while(not(salirJuego)):
