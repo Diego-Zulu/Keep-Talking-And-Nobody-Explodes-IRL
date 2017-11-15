@@ -4,6 +4,7 @@
 #include <LiquidCrystal_I2C.h>
 
 
+
 #define I2C_ADDR    0x3F
 #define BACKLIGHT_PIN     3
 #define En_pin  2
@@ -14,11 +15,11 @@
 #define D6_pin  6
 #define D7_pin  7
 
-#define BACK_BTN 2
-#define FORW_BTN 3
-#define ACCEPT_BTN 6
-#define CODE_LED 4
-#define BIG_LED 5
+#define BACK_BTN 12
+#define FORW_BTN 7
+#define ACCEPT_BTN 8
+#define CODE_LED 5
+#define BIG_LED 3
 #define FREQUENCIES 16
 
 #define dotLen 400     // length of the morse code 'dot'
@@ -56,6 +57,7 @@ LinkedList<String> *morseQueue = new LinkedList<String>();
 
 void setup()
 {
+
 
   lcd.begin (16, 2);
   lcd.setBacklightPin(BACKLIGHT_PIN, POSITIVE);
