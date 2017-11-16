@@ -26,14 +26,14 @@ class Wires(Module):
     wires = models.ManyToManyField(Color)
 
 class SimonSays(Module):
-    serial_number = models.ForeignKey(SerialNumber)
+    serial_number = models.ForeignKey(SerialNumber, on_delete = models.CASCADE)
     to_flash = models.ManyToManyField(Color)
 
-class Passwords(Module):
+class Password(Module):
     correct_password = models.CharField(max_length = 10)
 
 class TheButton(Module):
-    strip_color = models.ForeignKey(Color, related_name='%(class)s_strip_color')
-    button_color = models.ForeignKey(Color, related_name='%(class)s_button_color')
+    strip_color = models.ForeignKey(Color, on_delete = models.CASCADE, related_name='%(class)s_strip_color')
+    button_color = models.ForeignKey(Color, on_delete = models.CASCADE, related_name='%(class)s_button_color')
     text = models.CharField(max_length = 10)
     amount_batteries = models.IntegerField(default = 0)

@@ -30,6 +30,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="basics\migrations\__init__.py" />
+    <Compile Include="games\admin.py" />
+    <Compile Include="games\apps.py" />
+    <Compile Include="games\migrations\__init__.py" />
+    <Compile Include="games\models.py" />
+    <Compile Include="games\tests.py" />
+    <Compile Include="games\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="games\views.py" />
+    <Compile Include="games\__init__.py" />
     <Compile Include="manage.py" />
     <Compile Include="basics\admin.py">
       <SubType>Code</SubType>
@@ -60,12 +70,16 @@
     <Compile Include="ServerDJANGO\wsgi.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="games\templates\index.html" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="basics\" />
     <Folder Include="basics\migrations\" />
     <Folder Include="basics\templates\" />
+    <Folder Include="games\" />
+    <Folder Include="games\migrations\" />
+    <Folder Include="games\templates\" />
     <Folder Include="modules\" />
     <Folder Include="modules\migrations\" />
     <Folder Include="modules\templates\" />

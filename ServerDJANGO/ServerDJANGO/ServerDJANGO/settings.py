@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'modules',
     'basics',
+    'games',
 ]
 
 MIDDLEWARE_CLASSES = [
