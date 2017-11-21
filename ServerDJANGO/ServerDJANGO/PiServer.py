@@ -34,5 +34,5 @@ class ServerMQTT(object):
     @classmethod
     def get_instance(cls):
         if cls._instance is None:
-            cls._instance = PiServer()
+            cls._instance = ServerMQTT()
         return cls._instance

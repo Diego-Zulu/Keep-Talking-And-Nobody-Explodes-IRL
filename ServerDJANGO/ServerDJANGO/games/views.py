@@ -1,17 +1,18 @@
 import json
 
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.forms.models import model_to_dict
 from django.core.serializers import serialize
 from django import shortcuts
 
 from games.models import Game
 from PiServer import ServerMQTT
 
-def games_index(request):
+def index(request):
     return render(request, 'index.html')
 
-def games_list(request):
+def list(request):
     return render(
         request, 'list.html', 
         {
@@ -19,8 +20,15 @@ def games_list(request):
         }
     )
 
-def games_play(request):
+def play(request):
     return render(request, 'play.html')
+
+def handbook(request):
+    return render(request, 'handbook.html')
+
+def get_all(request):
+    games = Game.objects.all()
+    return HttpResponse(serialize('json', games, fields = ('name')), content_type = 'application/json')
 
 def current_game(request):
     server = ServerMQTT.get_instance()
@@ -29,7 +37,7 @@ def current_game(request):
         data = {
             'active' : True,
             'time' : server.get_time(),
-            'game' : json.loads(serialize('json', [server.get_game()]))
+            'game' : model_to_dict(server.get_game())
         }
     else:
         data = { 'active' : False }
@@ -50,6 +58,3 @@ def end_game(request):
 def restart_game(request):
     ServerMQTT.get_instance().restart()
     return current_game(request)
-
-def games_handbook(request):
-    return render(request, 'handbook.html')

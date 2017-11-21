@@ -83,9 +83,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app\static\css\layout.css" />
+    <Content Include="app\static\js\notification.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="app\templates\layouts\layout.html" />
     <Content Include="app\templates\layouts\_footer.html" />
     <Content Include="app\templates\layouts\_header.html" />
+    <Content Include="games\static\js\play.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="games\templates\handbook.html">
       <SubType>Code</SubType>
     </Content>
@@ -96,6 +102,7 @@
     <Folder Include="app\" />
     <Folder Include="app\static\" />
     <Folder Include="app\static\css\" />
+    <Folder Include="app\static\js\" />
     <Folder Include="app\templates\" />
     <Folder Include="app\templates\layouts\" />
     <Folder Include="basics\" />
@@ -103,6 +110,8 @@
     <Folder Include="basics\templates\" />
     <Folder Include="games\" />
     <Folder Include="games\migrations\" />
+    <Folder Include="games\static\" />
+    <Folder Include="games\static\js\" />
     <Folder Include="games\templates\" />
     <Folder Include="modules\" />
     <Folder Include="modules\migrations\" />
