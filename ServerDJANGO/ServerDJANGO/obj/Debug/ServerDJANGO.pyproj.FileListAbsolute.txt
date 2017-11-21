@@ -1,2 +1,0 @@
-C:\Users\santi\Desktop\ServerDJANGO\ServerDJANGO\obj\Debug\ServerDJANGO.pyproj.CoreCompileInputs.cache
-E:\RepositoriosGit\Keep-Talking-And-Nobody-Explodes-IRL\ServerDJANGO\ServerDJANGO\obj\Debug\ServerDJANGO.pyproj.CoreCompileInputs.cache
