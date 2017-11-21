@@ -1,9 +1,19 @@
-<html>
-<head><title></title></head>
+{% extends 'layouts/layout.html' %}
 
-<body>
+{% block title %}
+    Inicio
+{% endblock %}
 
-{{ content }}
-
-</body>
-</html>
+{% block content %}
+    <div class="center jumbotron">
+        <h1>Bienvenido a KTANE-IRL</h1>
+        <h2>
+            Version fisica del videojuego Keep Talking and Nobody Explodes para IOT
+        </h2>
+        <div class="btn-group btn-group-lg">
+            <a href="{% url 'games_handbook' %}" class="btn btn-info">Manual</a>
+            <a href="{% url 'games_list' %}" class="btn btn-warning">Ver lista de Niveles</a>
+            <a href="{% url 'games_play' %}" class="btn btn-danger">Jugar!</a>
+        </div>
+    </div>
+{% endblock %}

@@ -29,11 +29,20 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="app\apps.py" />
+    <Compile Include="app\views.py" />
+    <Compile Include="app\__init__.py" />
     <Compile Include="basics\migrations\__init__.py" />
     <Compile Include="games\admin.py" />
     <Compile Include="games\apps.py" />
     <Compile Include="games\migrations\__init__.py" />
     <Compile Include="games\models.py" />
+    <Compile Include="games\templates\list.html">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="games\templates\play.html">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="games\tests.py" />
     <Compile Include="games\urls.py">
       <SubType>Code</SubType>
@@ -68,12 +77,27 @@
     <Compile Include="ServerDJANGO\settings.py" />
     <Compile Include="ServerDJANGO\urls.py" />
     <Compile Include="ServerDJANGO\wsgi.py" />
+    <Compile Include="PiServer.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="app\static\css\layout.css" />
+    <Content Include="app\templates\layouts\layout.html" />
+    <Content Include="app\templates\layouts\_footer.html" />
+    <Content Include="app\templates\layouts\_header.html" />
+    <Content Include="games\templates\handbook.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="games\templates\index.html" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="app\" />
+    <Folder Include="app\static\" />
+    <Folder Include="app\static\css\" />
+    <Folder Include="app\templates\" />
+    <Folder Include="app\templates\layouts\" />
     <Folder Include="basics\" />
     <Folder Include="basics\migrations\" />
     <Folder Include="basics\templates\" />
@@ -83,6 +107,7 @@
     <Folder Include="modules\" />
     <Folder Include="modules\migrations\" />
     <Folder Include="modules\templates\" />
+    <Folder Include="server_kt\" />
     <Folder Include="ServerDJANGO\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Django.targets" />
