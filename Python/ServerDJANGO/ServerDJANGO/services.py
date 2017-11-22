@@ -1,11 +1,19 @@
 import random
 from games.models import *
 
-class ServerMQTT(object):
+class GameService(object):
     _instance = None
 
     def __init__(self):
         self.game = None
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = GameService()
+        return cls._instance
+
+    #################################################
 
     def is_running(self):
         return self.game != None
@@ -31,8 +39,3 @@ class ServerMQTT(object):
     def get_game(self):
         return self.game
 
-    @classmethod
-    def get_instance(cls):
-        if cls._instance is None:
-            cls._instance = ServerMQTT()
-        return cls._instance

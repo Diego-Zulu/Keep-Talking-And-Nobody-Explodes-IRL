@@ -5,7 +5,7 @@
     <ProjectGuid>931656d1-c9a6-49e7-bc3d-88aa8d940fc2</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>Server.py</StartupFile>
+    <StartupFile>ServerMQTT.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -31,7 +31,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ktane\constants.py" />
-    <Compile Include="Game\Game.py" />
+    <Compile Include="game\game.py" />
     <Compile Include="game\Game.py" />
     <Compile Include="ktane\modules.py">
       <SubType>Code</SubType>
@@ -42,7 +42,7 @@
     <Compile Include="ktane\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Server.py" />
+    <Compile Include="ServerMQTT.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="game\" />

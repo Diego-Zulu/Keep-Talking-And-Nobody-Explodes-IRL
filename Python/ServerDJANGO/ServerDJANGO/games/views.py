@@ -7,7 +7,7 @@ from django.core.serializers import serialize
 from django import shortcuts
 
 from games.models import Game
-from PiServer import ServerMQTT
+from services import GameService
 
 def index(request):
     return render(request, 'index.html')
@@ -31,7 +31,7 @@ def get_all(request):
     return HttpResponse(serialize('json', games, fields = ('name')), content_type = 'application/json')
 
 def current_game(request):
-    server = ServerMQTT.get_instance()
+    server = GameService.get_instance()
     data = None
     if server.is_running():
         data = {
@@ -44,7 +44,7 @@ def current_game(request):
     return JsonResponse(data)
 
 def start_game(request, game_id):
-    server = ServerMQTT.get_instance()
+    server = GameService.get_instance()
     if server.is_running():
         return HttpResponseBadRequest()
     game = shortcuts.get_object_or_404(Game, pk = game_id)
@@ -52,9 +52,9 @@ def start_game(request, game_id):
     return current_game(request)
 
 def end_game(request):
-    ServerMQTT.get_instance().end()
+    GameService.get_instance().end()
     return current_game(request)
 
 def restart_game(request):
-    ServerMQTT.get_instance().restart()
+    GameService.get_instance().restart()
     return current_game(request)

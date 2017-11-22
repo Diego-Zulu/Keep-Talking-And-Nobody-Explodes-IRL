@@ -3,7 +3,7 @@ import paho.mqtt.publish as publish
 
 class Module(object):
 
-    def __init__(self):
+    def __init__(self, game):
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
@@ -12,6 +12,7 @@ class Module(object):
         self.host = ""
         self.port = 1883
         self.keepalive = 60
+        self.game = game
     
     def on_connect(self, client, userdata, flags, rc):
         self.client.subscribe(self.topic_to_read)
@@ -21,7 +22,7 @@ class Module(object):
 
     def on_start(self):
         self.client.loop_start()
-        self.send_message("START");
+        self.send_message("START")
         self.start()
 
     def on_end(self):
@@ -43,16 +44,17 @@ class Module(object):
         publish.single(self.topic_to_post, msg, qos, retain, self.host, self.port, client_id, self.keepalive)
 
     def send_error(self):
-        self.send_message("ERROR");
+        self.game.lose_life()
+        self.send_message("ERROR")
 
     def send_ok(self):
-        self.send_message("OK");
+        self.send_message("OK")
 
     def send_start(self):
-        self.send_message("START");
+        self.send_message("START")
 
     def send_end(self):
-        self.send_message("END");
+        self.send_message("END")
 
     #USER TRIGGERS AN ACTION
     def message(self, msg):
@@ -74,10 +76,10 @@ from . import utils as utils
 #########################################
 class MorseCode(Module):
 
-    def __init__(self, correct_frequency, correct_word):
+    def __init__(self, correct_frequency, correct_word, game):
         self.frequency = correct_frequency
         self.word = correct_word
-        super(MorseCode, self).__init__()
+        super(MorseCode, self).__init__(game)
 
     def message(self, msg):
         if self.verify_frequency(msg):
@@ -95,11 +97,11 @@ class MorseCode(Module):
 #########################################
 class Wires(Module):
 
-    def __init__(self, wires, serNumb):
+    def __init__(self, wires, game):
         self.configured_wires = wires
         self.amount_wires = len(wires)
-        self.serial_number = serNumb
-        super(Wires, self).__init__()
+        self.serial_number = game.serial_number
+        super(Wires, self).__init__(game)
 
     def message(self, msg):
         i = int(msg)
@@ -201,11 +203,11 @@ class Wires(Module):
 #########################################
 class SimonSays(Module):
 
-    def __init__(self, numb, to_flash, game):
-        self.ser_numb = numb
+    def __init__(self, to_flash, game):
+        self.ser_numb = game.serial_number
         self.flashed = to_flash
         self.game = game
-        super(SimonSays, self).__init__()
+        super(SimonSays, self).__init__(game)
 
     def message(self, msg):
         pressed = utils.string_to_array(msg, str)
@@ -318,9 +320,9 @@ class SimonSays(Module):
 #########################################
 class Passwords(Module):
 
-    def __init__(self, correct_password):
+    def __init__(self, correct_password, game):
         self.password = correct_password
-        super(Passwords, self).__init__()
+        super(Passwords, self).__init__(game)
 
     def message(self, msg):
         if self.verify_password(msg):
@@ -337,15 +339,15 @@ class Passwords(Module):
 #########################################
 class TheButton(Module):
 
-    def __init__(self, color, text, batteries, indicators, strip, game):
+    def __init__(self, color, text, strip, game):
         self.button_color = color
         self.button_says = text
-        self.amount_batteries = batteries
-        self.lit_indicators = indicators
+        self.amount_batteries = game.amount_batteries
+        self.lit_indicators = game.lit
         self.strip_color = strip
         self.holding = False
         self.game = game
-        super(TheButton, self).__init__()
+        super(TheButton, self).__init__(game)
 
     def message(self, msg):
         result = self.the_button_was_handled(msg, self.game.timer.current_countdown_formater())
