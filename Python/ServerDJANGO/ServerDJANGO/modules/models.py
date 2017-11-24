@@ -1,7 +1,5 @@
 from django.db import models
-from django.db.models.signals import pre_save
 from django.core import validators
-from django.dispatch import receiver
 from basics.models import Color, Lit, SerialNumber
 
 class Module(models.Model):
@@ -22,14 +20,11 @@ class MorseCode(Module):
         self.correct_word = self.correct_word.lower()
         return super(MorseCode, self).save(*args, **kwargs)
 
-
 class Wires(Module):
     wires = models.ManyToManyField(Color)
 
-
 class SimonSays(Module):
     to_flash = models.ManyToManyField(Color)
-
 
 class Password(Module):
     correct_password = models.CharField(max_length = 10)
