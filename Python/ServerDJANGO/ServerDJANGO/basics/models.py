@@ -3,10 +3,10 @@ from django.core import validators
 
 class Color(models.Model):
     name = models.CharField(max_length = 30)
-    tipe = models.CharField(max_length = 3)
+    type = models.CharField(max_length = 3)
 
     def __str__(self):
-        return '{0} - {1}'.format(self.name, self.tipe)
+        return '{0} - {1}'.format(self.name, self.type)
 
 class SerialNumber(models.Model):
     name = models.CharField(max_length = 6)

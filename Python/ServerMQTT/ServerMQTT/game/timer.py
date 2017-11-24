@@ -4,11 +4,13 @@ from multiprocessing import Process
 
 class CountdownTimer(threading.Thread):
 
-    def __init__(self, time_in_seconds):
+    def __init__(self, time_in_seconds, x):
         self.start_time = time_in_seconds
         self.actual_time = time_in_seconds
         self.formatted_time = self.format_time(time_in_seconds)
         self.second_left = time_in_seconds
+        self.stop = False
+        self.lose = x
         threading.Thread.__init__(self)
 
     def run(self):
@@ -18,9 +20,15 @@ class CountdownTimer(threading.Thread):
         while self.actual_time >= 60:
             time.sleep(1)
             self.actual_time -= 1
+            if self.stop:
+                break
         while self.actual_time > 0:
             time.sleep(0.01)
             self.actual_time -= 0.01
+            if self.stop:
+                break
+        if not(self.stop) and self.actual_time <= 0:
+            self.lose()
 
     def current_countdown(self):
         return int(self.actual_time)

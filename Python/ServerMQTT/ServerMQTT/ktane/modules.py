@@ -13,6 +13,7 @@ class Module(object):
         self.port = 1883
         self.keepalive = 60
         self.game = game
+        self.won = False
     
     def on_connect(self, client, userdata, flags, rc):
         self.client.subscribe(self.topic_to_read)
@@ -21,6 +22,7 @@ class Module(object):
         self.message(msg.payload.decode("utf-8"))
 
     def on_start(self):
+        self.won = False
         self.client.loop_start()
         self.send_message("START")
         self.start()
@@ -48,6 +50,8 @@ class Module(object):
         self.send_message("ERROR")
 
     def send_ok(self):
+        self.won = True
+        self.game.winning()
         self.send_message("OK")
 
     def send_start(self):
@@ -318,11 +322,11 @@ class SimonSays(Module):
         return True
 
 #########################################
-class Passwords(Module):
+class Password(Module):
 
     def __init__(self, correct_password, game):
         self.password = correct_password
-        super(Passwords, self).__init__(game)
+        super(Password, self).__init__(game)
 
     def message(self, msg):
         if self.verify_password(msg):
