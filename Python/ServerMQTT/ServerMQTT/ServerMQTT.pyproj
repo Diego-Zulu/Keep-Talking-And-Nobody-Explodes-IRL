@@ -22,8 +22,6 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Game\Configuration.py" />
-    <Compile Include="game\Configuration.py" />
     <Compile Include="game\timer.py">
       <SubType>Code</SubType>
     </Compile>
@@ -32,7 +30,6 @@
     </Compile>
     <Compile Include="ktane\constants.py" />
     <Compile Include="game\game.py" />
-    <Compile Include="game\Game.py" />
     <Compile Include="ktane\modules.py">
       <SubType>Code</SubType>
     </Compile>
@@ -45,7 +42,6 @@
     <Compile Include="ServerMQTT.py" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="game\" />
     <Folder Include="game\" />
     <Folder Include="ktane\" />
   </ItemGroup>

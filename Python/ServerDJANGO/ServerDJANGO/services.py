@@ -1,6 +1,7 @@
-import random
+import random, sys
+sys.path.append("../../ServerMQTT/")
 from games.models import Game as GameModel
-from ServerMQTT import GameFactory, GameBuilder
+from ServerMQTT.ServerMQTT import GameFactory, GameBuilder
 
 class GameService(object):
     _instance = None

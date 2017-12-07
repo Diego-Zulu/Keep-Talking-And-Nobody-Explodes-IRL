@@ -1,6 +1,5 @@
-from ktane.modules import *
-from game import Configuration
-from game.timer import *
+from ..ktane.modules import *
+from timer import *
 
 class Game(object):
 
