@@ -2,6 +2,8 @@
 #include <Wire.h>
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
+#include <ClientMQTT.h>
+
 
 
 
@@ -15,10 +17,10 @@
 #define D6_pin  6
 #define D7_pin  7
 
-#define BACK_BTN 12
-#define FORW_BTN 7
-#define ACCEPT_BTN 8
-#define CODE_LED 5
+#define BACK_BTN 14
+#define FORW_BTN 12
+#define ACCEPT_BTN 13
+#define CODE_LED 15
 #define BIG_LED 3
 #define FREQUENCIES 16
 
@@ -51,41 +53,63 @@ String code = "... .... . .-.. .-..";
 String correct = "3.552 MHz";
 
 bool won = false;
+bool started = false;
+bool waitingForServer = false;
 
 LinkedList<String> *buttonsQueue = new LinkedList<String>();
 LinkedList<String> *morseQueue = new LinkedList<String>();
 
-const char* ssid = "SaAP";
-const char* password = "santiago17";
-const char* mqtt_server = "192.168.43.204";
+const char* ssid = "ASUS";
+const char* password = "M#V#23622607";
+const char* mqtt_server = "192.168.2.150";
 const unsigned int port = 1883;
-const char* module = "Morse";
+const char* module = "MorseCode";
 ClientMQTT client(module);
 
 void f_Start(char* message) {
-  
+  Serial.println("START");
   won = false;
-  digitalWrite(VICTORY_LED, LOW);
+  digitalWrite(BIG_LED, LOW);
+  buttonsQueue->add("CHECK");
+  morseQueue->add("CHAR");
+  morseQueue->add(String(0));
+  printFreqToLcd(0);
+  started = true;
+  waitingForServer = false;
+  pos = 0;
 }
 
 void f_End(char* message) {
+  Serial.println("ONEND");
   won = true;
+  printFreqToLcd(-1);
+  started = false;
+  waitingForServer = false;
+  digitalWrite(CODE_LED, LOW);
 }
+  digitalWrite(BIG_LED, LOW);
 
 void f_OnMessage(char* message) {
+  Serial.println("ONMESSAGE");
+  Serial.println(message);
   if (strcmp(message, "OK") == 0) {
     digitalWrite(BIG_LED, HIGH);
+     digitalWrite(CODE_LED, LOW);
     won = true;
+    started = false;
       buttonsQueue->clear();
       morseQueue->clear();
   }
+  waitingForServer = false;
 }
 
 void setup()
 {
+  Serial.begin(9600);
+  Serial.println("SETUP");
   client.connectWIFI(ssid, password);
   client.connectMQTT(mqtt_server, port, f_Start, f_End, f_OnMessage);
-
+  Serial.println("CONNECTED");
   lcd.begin (16, 2);
   lcd.setBacklightPin(BACKLIGHT_PIN, POSITIVE);
   lcd.setBacklight(HIGH);
@@ -96,12 +120,9 @@ void setup()
   pinMode(ACCEPT_BTN, INPUT_PULLUP);
   pinMode(CODE_LED, OUTPUT);
   pinMode(BIG_LED, OUTPUT);
+  digitalWrite(BIG_LED, LOW);
 
-  printFreqToLcd(0);
-
-  buttonsQueue->add("CHECK");
-  morseQueue->add("CHAR");
-  morseQueue->add(String(0));
+  //printFreqToLcd(0);
 }
 
 void loop()
@@ -110,8 +131,11 @@ void loop()
     client.startListeningLoop();
   }
   client.refresh();
-  ConsumeMorseQueue();
+  if (started) {
+      ConsumeMorseQueue();
   ConsumeCheckButtonsQueue();
+  }
+
 }
 
 void ConsumeMorseQueue() {
@@ -235,13 +259,14 @@ static int checkButtons() {
         printFreqToLcd(pos);
         addDelay(buttonsQueue, lcd_print_delay);
       }
-    } else if (digitalRead(ACCEPT_BTN) == 0) {
-
-       string s;
-        s.push_back((char)(tuner[pos]));
-        client.sendMessage(s.c_str());
+    } else if (digitalRead(ACCEPT_BTN) == 0 && !waitingForServer) {
+        waitingForServer = true;
+        Serial.println("SEND");
+        
+        client.sendMessage(words[pos].c_str());
+        delay(150);
         client.refresh();
-      
+        
     }
   }
 }
@@ -254,11 +279,14 @@ void addDelay(LinkedList<String>* list, int t) {
 
 void printFreqToLcd(int pos) {
 
-  lcd.setCursor(0,0);
-  lcd.clear();
-  lcd.print(tuner[pos]);
-  lcd.setCursor(0,1);
-  lcd.print("   " + words[pos] + "   ");
+    lcd.clear();
+  if (pos != -1) {
+    lcd.setCursor(0,0);
+    
+    lcd.print(tuner[pos]);
+    lcd.setCursor(0,1);
+    lcd.print("   " + words[pos] + "   ");
+  }
 }
 
 

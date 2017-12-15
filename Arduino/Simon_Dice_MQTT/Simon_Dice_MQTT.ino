@@ -1,126 +1,4 @@
-/*
- SparkFun Inventor's Kit
- Example sketch 16
- Spark Fun Electronics
- Oct. 7, 2014
-
- Simon Says is a memory game. Start the game by pressing one of the four buttons. When a button lights up, 
- press the button, repeating the sequence. The sequence will get longer and longer. The game is won after 
- 13 rounds.
-
- Generates random sequence, plays music, and displays button lights.
-
- Simon tones from Wikipedia
- - A (red, upper left) - 440Hz - 2.272ms - 1.136ms pulse
- - a (green, upper right, an octave higher than A) - 880Hz - 1.136ms,
- 0.568ms pulse
- - D (blue, lower left, a perfect fourth higher than the upper left) 
- 587.33Hz - 1.702ms - 0.851ms pulse
- - G (yellow, lower right, a perfect fourth higher than the lower left) - 
- 784Hz - 1.276ms - 0.638ms pulse
-
- Simon Says game originally written in C for the PIC16F88.
- Ported for the ATmega168, then ATmega328, then Arduino 1.0.
- Fixes and cleanup by Joshua Neal <joshua[at]trochotron.com>
-
- This sketch was written by SparkFun Electronics,
- with lots of help from the Arduino community.
- This code is completely free for any use.
- Visit http://www.arduino.cc to learn about the Arduino.
- */
-
-/*************************************************
-* Public Constants
-*************************************************/
-#define NOTE_B0 31
-#define NOTE_C1 33
-#define NOTE_CS1 35
-#define NOTE_D1 37
-#define NOTE_DS1 39
-#define NOTE_E1 41
-#define NOTE_F1 44
-#define NOTE_FS1 46
-#define NOTE_G1 49
-#define NOTE_GS1 52
-#define NOTE_A1 55
-#define NOTE_AS1 58
-#define NOTE_B1 62
-#define NOTE_C2 65
-#define NOTE_CS2 69
-#define NOTE_D2 73
-#define NOTE_DS2 78
-#define NOTE_E2 82
-#define NOTE_F2 87
-#define NOTE_FS2 93
-#define NOTE_G2 98
-#define NOTE_GS2 104
-#define NOTE_A2 110
-#define NOTE_AS2 117
-#define NOTE_B2 123
-#define NOTE_C3 131
-#define NOTE_CS3 139
-#define NOTE_D3 147
-#define NOTE_DS3 156
-#define NOTE_E3 165
-#define NOTE_F3 175
-#define NOTE_FS3 185
-#define NOTE_G3 196
-#define NOTE_GS3 208
-#define NOTE_A3 220
-#define NOTE_AS3 233
-#define NOTE_B3 247
-#define NOTE_C4 262
-#define NOTE_CS4 277
-#define NOTE_D4 294
-#define NOTE_DS4 311
-#define NOTE_E4 330
-#define NOTE_F4 349
-#define NOTE_FS4 370
-#define NOTE_G4 392
-#define NOTE_GS4 415
-#define NOTE_A4 440
-#define NOTE_AS4 466
-#define NOTE_B4 494
-#define NOTE_C5 523
-#define NOTE_CS5 554
-#define NOTE_D5 587
-#define NOTE_DS5 622
-#define NOTE_E5 659
-#define NOTE_F5 698
-#define NOTE_FS5 740
-#define NOTE_G5 784
-#define NOTE_GS5 831
-#define NOTE_A5 880
-#define NOTE_AS5 932
-#define NOTE_B5 988
-#define NOTE_C6 1047
-#define NOTE_CS6 1109
-#define NOTE_D6 1175
-#define NOTE_DS6 1245
-#define NOTE_E6 1319
-#define NOTE_F6 1397
-#define NOTE_FS6 1480
-#define NOTE_G6 1568
-#define NOTE_GS6 1661
-#define NOTE_A6 1760
-#define NOTE_AS6 1865
-#define NOTE_B6 1976
-#define NOTE_C7 2093
-#define NOTE_CS7 2217
-#define NOTE_D7 2349
-#define NOTE_DS7 2489
-#define NOTE_E7 2637
-#define NOTE_F7 2794
-#define NOTE_FS7 2960
-#define NOTE_G7 3136
-#define NOTE_GS7 3322
-#define NOTE_A7 3520
-#define NOTE_AS7 3729
-#define NOTE_B7 3951
-#define NOTE_C8 4186
-#define NOTE_CS8 4435
-#define NOTE_D8 4699
-#define NOTE_DS8 4978
+#include <ClientMQTT.h>
 
 #define CHOICE_OFF      0 //Used to control LEDs
 #define CHOICE_NONE     0 //Used to check buttons
@@ -129,79 +7,124 @@
 #define CHOICE_BLUE (1 << 2)
 #define CHOICE_YELLOW   (1 << 3)
 
-#define LED_RED     9
-#define LED_GREEN   7
-#define LED_BLUE    5
-#define LED_YELLOW  3
-#define BIG_GREEN  2
+#define LED_RED     13
+#define LED_GREEN   5
+#define LED_BLUE    14
+#define LED_YELLOW  0
+#define VICTORY_LED  3
 
-// Button pin definitions
-#define BUTTON_RED    10
-#define BUTTON_GREEN  8
-#define BUTTON_BLUE   6
-#define BUTTON_YELLOW 4
+#define BUTTON_RED    15
+#define BUTTON_GREEN  4
+#define BUTTON_BLUE   12
+#define BUTTON_YELLOW 2
 
-
-// Buzzer pin definitions
-#define BUZZER1  11
-#define BUZZER2  12
-
-// Define game parameters
-#define ROUNDS_TO_WIN      6 //Number of rounds to succesfully remember before you win. 13 is do-able.
-#define ENTRY_TIME_LIMIT   3000 //Amount of time to press a button before game times out. 3000ms = 3 sec
+#define ROUNDS_TO_WIN      32 
+#define ENTRY_TIME_LIMIT   3000 
 
 #define MODE_MEMORY  0
 #define MODE_BATTLE  1
 #define MODE_BEEGEES 2
 
-// Game state variables
-byte gameMode = MODE_MEMORY; //By default, let's play the memory game
-byte gameBoard[32]; //Contains the combination of buttons as we advance
-byte correctInputs[32];
-byte gameRound = 0; //Counts the number of succesful rounds the player has made it through
+string gameBoard[32]; 
+int gameBoardLength = 32;
+string userInputs[32];
+byte gameRound = 0; 
+byte currentMove = 0;
 bool won = false;
+bool waitingForResponse = false;
 
-const char* ssid = "SaAP";
-const char* password = "santiago17";
-const char* mqtt_server = "192.168.43.204";
+const char* ssid = "ASUS";
+const char* password = "M#V#23622607";
+const char* mqtt_server = "192.168.2.150";
 const unsigned int port = 1883;
-const char* module = "Simon_Says";
+const char* module = "SimonSays";
 ClientMQTT client(module);
 
-void f_Start(char* message) {
-  byte gameBoard[32]; //Contains the combination of buttons as we advance
-  byte correctInputs[32];
-  
-  wires_amount = atoi(message);
-  won = false;
-  wiresActive->clear();
-  wiresUnused->clear();
-  for (int i = 0; i < TOTAL_WIRES && wiresActive->size() < wires_amount; i++) {
-    if (digitalRead(wiresPos[i]) == LOW) {
-      wiresActive->add(wiresPos[i]);
-      wiresUnused->add(true);
-    }
+void sendInputsToServer() {
+
+  waitingForResponse = true;
+  string s = "";
+  for (int i=0; i<currentMove; i++) {
+    s += userInputs[i] + ",";
   }
+  s += userInputs[currentMove];
+  Serial.println("SEND");
+  Serial.println(s.c_str());
+  client.sendMessage(s.c_str());
+  client.refresh();
+}
+
+int countCommasInMessage(char* message) {
+  int count = 0;
+
+  for(int i = 0; message[i] != '\0'; i++) {
+
+    if (message[i] == ',') {
+      count++;
+    }
+
+  }
+  
+  return ++count;
+}
+
+void fillGameBoardWithColors(char* message) {
+  int wordsExtracted = 0;
+  string s = "";
+
+  for(int i = 0; message[i] != '\0' && wordsExtracted <= gameBoardLength; i++) {
+
+    if (message[i] == ',') {
+      gameBoard[wordsExtracted] = s;
+      wordsExtracted++;
+      s = "";
+    } else {
+      s.push_back(message[i]);
+    }
+
+  }
+}
+
+void f_Start(char* message) {
+  
+ Serial.begin(9600);
+   Serial.println("FSTART");
+ Serial.println(message);
+  int gameBoardLength = countCommasInMessage(message);
+  fillGameBoardWithColors(message);
+  
+  won = false;
   digitalWrite(VICTORY_LED, LOW);
 }
 
 void f_End(char* message) {
   won = true;
+  Serial.println("FEND");
 }
 
 void f_OnMessage(char* message) {
+  Serial.println("ONMESSAGE");
   if (strcmp(message, "OK") == 0) {
-    digitalWrite(VICTORY_LED, HIGH);
-    won = true;
+    gameRound++;
+    if (gameRound >= gameBoardLength) {
+      digitalWrite(VICTORY_LED, HIGH);
+      won = true;
+    }
+
+  } else if (strcmp(message, "ERROR") == 0) {
+   //clean userInputs
+   gameRound = 0;
   }
 }
 
 void setup()
 {
+  Serial.begin(9600);
+  Serial.println("SETUP");
   client.connectWIFI(ssid, password);
   client.connectMQTT(mqtt_server, port, f_Start, f_End, f_OnMessage);
+  Serial.println("CONECTED");
 
-  //Enable pull ups on inputs
   pinMode(BUTTON_RED, INPUT_PULLUP);
   pinMode(BUTTON_GREEN, INPUT_PULLUP);
   pinMode(BUTTON_BLUE, INPUT_PULLUP);
@@ -211,47 +134,37 @@ void setup()
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_BLUE, OUTPUT);
   pinMode(LED_YELLOW, OUTPUT);
-  pinMode(BIG_GREEN, OUTPUT);
-  digitalWrite(BIG_GREEN, LOW);
+  pinMode(VICTORY_LED, OUTPUT);
+  digitalWrite(VICTORY_LED, LOW);
 
-  pinMode(BUZZER1, OUTPUT);
-  pinMode(BUZZER2, OUTPUT);
 
-  //Mode checking
-  gameMode = MODE_MEMORY; // By default, we're going to play the memory game
-
-  
 }
 
 void loop()
 {
+  if(!client.isListening()) {
+    client.startListeningLoop();
+  }
 
-
-    // Play memory game and handle result
-    if (!won && play_memory() == true) 
-      play_winner(); // Player won, play winner tones
-    else 
-      play_loser(); // Player lost, play loser tones
+    if (won) {
+      play_winner(); 
+      } else {
+        play_memory();
+      }
 }
 
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//The following functions are related to game play only
-
-// Play the regular memory game
-// Returns 0 if player loses, or 1 if player wins
 boolean play_memory(void)
 {
 
-  gameRound = 0; // Reset the game to the beginning
+  gameRound = 0;
 
-  while (gameRound < ROUNDS_TO_WIN) 
+  while (!won) 
   {
+    Serial.println("LOOP");
+    client.refresh();
+    playMoves();
 
-
-    playMoves(); // Play back the current game board
-
-    // Then require the player to repeat the sequence.
-    for (byte currentMove = 0 ; currentMove < gameRound ; currentMove++)
+    for (currentMove = 0 ; currentMove <= gameRound ; currentMove++)
     {
       byte choice = wait_for_button(); // See what button the user presses
 
@@ -259,56 +172,26 @@ boolean play_memory(void)
         currentMove--; 
         playMoves();
       } else {
-         if (choice != correctInputs[currentMove]) return false; // If the choice is incorect, player loses
+         if(choice == CHOICE_RED) userInputs[currentMove] = "R";
+          else if(choice == CHOICE_GREEN) userInputs[currentMove] = "G";
+          else if(choice == CHOICE_BLUE) userInputs[currentMove] = "BLU";
+          else if(choice == CHOICE_YELLOW) userInputs[currentMove] = "Y";
+
+          
+          sendInputsToServer();
+          while (waitingForResponse) {
+            client.refresh();
+          }
+          
       }
     }
 
-    delay(1000); // Player was correct, delay before playing moves
+    delay(1000);
   }
 
-  return true; // Player made it through all the rounds to win!
+  return true;
 }
 
-// Plays the current contents of the game moves
-void playMoves(void)
-{
-  for (byte currentMove = 0 ; currentMove < gameRound ; currentMove++) 
-  {
-    toner(gameBoard[currentMove], 150);
-
-    // Wait some amount of time between button playback
-    // Shorten this to make game harder
-    delay(150); // 150 works well. 75 gets fast.
-  }
-}
-
-// Adds a new random button to the game sequence, by sampling the timer
-void add_to_moves(char* button)
-{
-
-  byte newButton;
-  
-  if(button == "R") newButton = CHOICE_RED;
-  else if(button == "G") newButton = CHOICE_GREEN;
-  else if(button == "BLU") newButton = CHOICE_BLUE;
-  else if(button == "Y") newButton = CHOICE_YELLOW;
-
-  gameBoard[gameRound] = newButton; // Add this new button to the game array
-  correctInputs[gameRound++] = debug(newButton);
-}
-
-int debug(int button) {
-  if(button == CHOICE_RED)return CHOICE_BLUE;
-  else if(button == CHOICE_GREEN) return CHOICE_YELLOW;
-  else if(button == CHOICE_BLUE) return CHOICE_RED;
-  else if(button == CHOICE_YELLOW) return CHOICE_GREEN;
-}
-
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//The following functions control the hardware
-
-// Lights a given LEDs
-// Pass in a byte that is made up from CHOICE_RED, CHOICE_YELLOW, etc
 void setLEDs(byte leds)
 {
   if ((leds & CHOICE_RED) != 0)
@@ -332,8 +215,38 @@ void setLEDs(byte leds)
     digitalWrite(LED_YELLOW, LOW);
 }
 
-// Wait for a button to be pressed. 
-// Returns one of LED colors (LED_RED, etc.) if successful, 0 if timed out
+byte transformMoveIntoByte(int i) {
+
+  if (gameBoard[i] == "R") {
+    return CHOICE_RED;
+  } else if (gameBoard[i] == "BLU") {
+    return CHOICE_BLUE;
+  } else if (gameBoard[i] == "G") {
+    return CHOICE_GREEN;
+  } else if (gameBoard[i] == "Y") {
+    return CHOICE_YELLOW;
+  }
+
+  return 0;
+}
+
+void playMoves(void)
+{
+
+  for (int currentMove = 0; currentMove <= gameRound ; currentMove++) 
+  {
+    byte l = transformMoveIntoByte(currentMove);
+      setLEDs(l); //Turn on a given LED
+
+  delay(150);
+
+  setLEDs(CHOICE_OFF);
+
+   delay(150);
+  }
+}
+
+
 byte wait_for_button(void)
 {
   long startTime = millis(); // Remember the time we started the this loop
@@ -344,21 +257,18 @@ byte wait_for_button(void)
 
     if (button != CHOICE_NONE)
     { 
-      toner(button, 150); // Play the button the user just pressed
+      while(checkButton() != CHOICE_NONE) ; 
 
-      while(checkButton() != CHOICE_NONE) ;  // Now let's wait for user to release button
-
-      delay(10); // This helps with debouncing and accidental double taps
+      delay(10); 
 
       return button;
     }
 
   }
 
-  return CHOICE_NONE; // If we get here, we've timed out!
+  return CHOICE_NONE;
 }
 
-// Returns a '1' bit in the position corresponding to CHOICE_RED, CHOICE_GREEN, etc.
 byte checkButton(void)
 {
   if (digitalRead(BUTTON_RED) == 0) return(CHOICE_RED); 
@@ -369,165 +279,8 @@ byte checkButton(void)
   return(CHOICE_NONE); // If no button is pressed, return none
 }
 
-// Light an LED and play tone
-// Red, upper left:     440Hz - 2.272ms - 1.136ms pulse
-// Green, upper right:  880Hz - 1.136ms - 0.568ms pulse
-// Blue, lower left:    587.33Hz - 1.702ms - 0.851ms pulse
-// Yellow, lower right: 784Hz - 1.276ms - 0.638ms pulse
-void toner(byte which, int buzz_length_ms)
-{
-  setLEDs(which); //Turn on a given LED
-
-  //Play the sound associated with the given LED
-  switch(which) 
-  {
-  case CHOICE_RED:
-    buzz_sound(buzz_length_ms, 1136); 
-    break;
-  case CHOICE_GREEN:
-    buzz_sound(buzz_length_ms, 568); 
-    break;
-  case CHOICE_BLUE:
-    buzz_sound(buzz_length_ms, 851); 
-    break;
-  case CHOICE_YELLOW:
-    buzz_sound(buzz_length_ms, 638); 
-    break;
-  }
-
-  setLEDs(CHOICE_OFF); // Turn off all LEDs
-}
-
-// Toggle buzzer every buzz_delay_us, for a duration of buzz_length_ms.
-void buzz_sound(int buzz_length_ms, int buzz_delay_us)
-{
-  // Convert total play time from milliseconds to microseconds
-  long buzz_length_us = buzz_length_ms * (long)1000;
-
-  // Loop until the remaining play time is less than a single buzz_delay_us
-  while (buzz_length_us > (buzz_delay_us * 2))
-  {
-    buzz_length_us -= buzz_delay_us * 2; //Decrease the remaining play time
-
-    // Toggle the buzzer at various speeds
-    digitalWrite(BUZZER1, LOW);
-    digitalWrite(BUZZER2, HIGH);
-    delayMicroseconds(buzz_delay_us);
-
-    digitalWrite(BUZZER1, HIGH);
-    digitalWrite(BUZZER2, LOW);
-    delayMicroseconds(buzz_delay_us);
-  }
-}
-
-// Play the winner sound and lights
 void play_winner(void)
 {
-  digitalWrite(BIG_GREEN, HIGH);
+  digitalWrite(VICTORY_LED, HIGH);
   won = true;
-}
-
-// Play the winner sound
-// This is just a unique (annoying) sound we came up with, there is no magic to it
-void winner_sound(void)
-{
-  // Toggle the buzzer at various speeds
-  for (byte x = 250 ; x > 70 ; x--)
-  {
-    for (byte y = 0 ; y < 3 ; y++)
-    {
-      digitalWrite(BUZZER2, HIGH);
-      digitalWrite(BUZZER1, LOW);
-      delayMicroseconds(x);
-
-      digitalWrite(BUZZER2, LOW);
-      digitalWrite(BUZZER1, HIGH);
-      delayMicroseconds(x);
-    }
-  }
-}
-
-// Play the loser sound/lights
-void play_loser(void)
-{
- delay(1000);
-}
-
-// Show an "attract mode" display while waiting for user to press button.
-void attractMode(void)
-{
-  while(1) 
-  {
-    setLEDs(CHOICE_RED);
-    delay(100);
-    if (checkButton() != CHOICE_NONE) return;
-
-    setLEDs(CHOICE_BLUE);
-    delay(100);
-    if (checkButton() != CHOICE_NONE) return;
-
-    setLEDs(CHOICE_GREEN);
-    delay(100);
-    if (checkButton() != CHOICE_NONE) return;
-
-    setLEDs(CHOICE_YELLOW);
-    delay(100);
-    if (checkButton() != CHOICE_NONE) return;
-  }
-}
-
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-// The following functions are related to Beegees Easter Egg only
-
-// Notes in the melody. Each note is about an 1/8th note, "0"s are rests.
-int melody[] = {
-  NOTE_G4, NOTE_A4, 0, NOTE_C5, 0, 0, NOTE_G4, 0, 0, 0,
-  NOTE_E4, 0, NOTE_D4, NOTE_E4, NOTE_G4, 0,
-  NOTE_D4, NOTE_E4, 0, NOTE_G4, 0, 0,
-  NOTE_D4, 0, NOTE_E4, 0, NOTE_G4, 0, NOTE_A4, 0, NOTE_C5, 0};
-
-int noteDuration = 115; // This essentially sets the tempo, 115 is just about right for a disco groove :)
-int LEDnumber = 0; // Keeps track of which LED we are on during the beegees loop
-
-// Do nothing but play bad beegees music
-// This function is activated when user holds bottom right button during power up
-void play_beegees()
-{
-  //Turn on the bottom right (yellow) LED
-  setLEDs(CHOICE_YELLOW);
-  toner(CHOICE_YELLOW, 150);
-
-  setLEDs(CHOICE_RED | CHOICE_GREEN | CHOICE_BLUE); // Turn on the other LEDs until you release button
-
-  while(checkButton() != CHOICE_NONE) ; // Wait for user to stop pressing button
-
-  setLEDs(CHOICE_NONE); // Turn off LEDs
-
-  delay(1000); // Wait a second before playing song
-
-  digitalWrite(BUZZER1, LOW); // setup the "BUZZER1" side of the buzzer to stay low, while we play the tone on the other pin.
-
-  while(checkButton() == CHOICE_NONE) //Play song until you press a button
-  {
-    // iterate over the notes of the melody:
-    for (int thisNote = 0; thisNote < 32; thisNote++) {
-      changeLED();
-      tone(BUZZER2, melody[thisNote],noteDuration);
-      // to distinguish the notes, set a minimum time between them.
-      // the note's duration + 30% seems to work well:
-      int pauseBetweenNotes = noteDuration * 1.30;
-      delay(pauseBetweenNotes);
-      // stop the tone playing:
-      noTone(BUZZER2);
-    }
-  }
-}
-
-// Each time this function is called the board moves to the next LED
-void changeLED(void)
-{
-  setLEDs(1 << LEDnumber); // Change the LED
-
-  LEDnumber++; // Goto the next LED
-  if(LEDnumber > 3) LEDnumber = 0; // Wrap the counter if needed
 }
