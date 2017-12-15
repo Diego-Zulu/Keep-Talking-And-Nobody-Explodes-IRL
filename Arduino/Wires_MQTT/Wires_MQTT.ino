@@ -59,7 +59,7 @@ void setup() {
   for (int i = 0; i < TOTAL_WIRES; i++) {
     pinMode(wiresPos[i], INPUT_PULLUP);
   }
-  won = true;
+  //won = true;
 }
 
 void loop() {
