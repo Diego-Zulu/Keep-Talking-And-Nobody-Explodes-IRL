@@ -1,8 +1,7 @@
-
+#include <ClientMQTT.h>
 #include <Wire.h>
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
-#include <TrueRandom.h>
 
 #define I2C_ADDR    0x3F
 #define BACKLIGHT_PIN     3
@@ -34,7 +33,7 @@
 
 LiquidCrystal_I2C  lcd(I2C_ADDR, En_pin, Rw_pin, Rs_pin, D4_pin, D5_pin, D6_pin, D7_pin);
 
-String password = "";
+String solution = "";
 
 char posibilities[char_amount][char_amount];
 
@@ -51,13 +50,36 @@ ClientMQTT client(module);
 
 void f_Start(char* message) {
   
-  password = String(password + message);
+  solution = String(solution + message);
   won = false;
   digitalWrite(VICTORY_LED, LOW);
+
+  for (int i = 0; i < char_amount; i++) {
+    posibilities[i][0] = solution[i];
+    for (int j = 1; j < char_amount; j++) {
+      randomSeed(millis());
+      bool repeated = true;
+      while (repeated) {
+        repeated = false;
+        char cch = 'A' + random(0,26);
+        for (int f = 0; f <= j; f++) {
+          if (posibilities[i][f] == cch) {
+            repeated = true;
+            break;
+          }
+        }
+        posibilities[i][j] = cch;
+      }
+    }
+    shuffle(posibilities[i]);
+  }
+
+    printToLcd();
 }
 
 void f_End(char* message) {
   won = true;
+  lcd.clear();
 }
 
 void f_OnMessage(char* message) {
@@ -72,23 +94,12 @@ void setup() {
   Serial.begin(9600);
   client.connectWIFI(ssid, password);
   client.connectMQTT(mqtt_server, port, f_Start, f_End, f_OnMessage);
-  
-
-
-  Serial.println();
 
   for (int i = 0; i < char_amount; i++) {
     positions[i] = 0;
   }
 
-  for (int i = 0; i < char_amount; i++) {
-    posibilities[i][0] = password[i];
-    for (int j = 1; j < char_amount; j++) {
-      char cch = 'A' + TrueRandom.random(0,26);
-      posibilities[i][j] = cch;
-    }
-    shuffle(posibilities[i]);
-  }
+  
 
   lcd.begin (16, 2);
   lcd.setBacklightPin(BACKLIGHT_PIN, POSITIVE);
@@ -105,15 +116,15 @@ void setup() {
 
   pinMode(INPUT_ANSWER, INPUT_PULLUP);
 
-  printToLcd();
-
 
   
 }
 
 void shuffle(char pos[]) {
+  randomSeed(millis());
   for (int i = 0; i < char_amount; i++) {
-    int r = TrueRandom.random(0,char_amount);
+    
+    int r = random(0,char_amount);
     char temp = pos[i]; pos[i] = pos[r]; pos[r] = temp;
   }
 }
@@ -167,17 +178,22 @@ void loop() {
       printToLcd();
       delay(BTN_PRESS_DELAY);
     } else if (digitalRead(INPUT_ANSWER) == 0) {
-      if (GetWord() == password) {
+     /* if (GetWord() == solution) {
         won = true;
         digitalWrite(VICTORY_LED, HIGH);
-      }
+      }*/
+       string s = GetWord();
+       Serial.println("SEND");
+       Serial.println(s.c_str());
+       client.sendMessage(s.c_str());
+      
       
       delay(BTN_PRESS_DELAY);
     }
   }
 }
 
-String GetWord() {
+string GetWord() {
   char toPrint[5] = {posibilities[0][positions[0]], posibilities[1][positions[1]], posibilities[2][positions[2]], posibilities[3][positions[3]], posibilities[4][positions[4]]};
   return toPrint;
 }
@@ -185,7 +201,6 @@ String GetWord() {
 void printToLcd() {
 
   lcd.clear();
-  char toPrint[16] = {' ', ' ', ' ', ' ', posibilities[0][positions[0]],  ' ', posibilities[1][positions[1]], ' ', posibilities[2][positions[2]], ' ', posibilities[3][positions[3]], ' ', posibilities[4][positions[4]], ' ', ' ', ' '};
+  char toPrint[16] = {' ', ' ', posibilities[0][positions[0]],  ' ', ' ', posibilities[1][positions[1]], ' ',' ', posibilities[2][positions[2]], ' ', ' ',posibilities[3][positions[3]], ' ', ' ',posibilities[4][positions[4]],  ' '};
   lcd.print(toPrint);
-
 }

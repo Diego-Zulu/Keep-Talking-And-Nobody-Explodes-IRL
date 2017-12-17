@@ -194,7 +194,7 @@ String GetWord() {
 void printToLcd() {
 
   lcd.clear();
-  char toPrint[16] = {' ', ' ', ' ', ' ', posibilities[0][positions[0]],  ' ', posibilities[1][positions[1]], ' ', posibilities[2][positions[2]], ' ', posibilities[3][positions[3]], ' ', posibilities[4][positions[4]], ' ', ' ', ' '};
+  char toPrint[16] = {' ', ' ', posibilities[0][positions[0]],  ' ', ' ', posibilities[1][positions[1]], ' ',' ', posibilities[2][positions[2]], ' ', ' ',posibilities[3][positions[3]], ' ', ' ',posibilities[4][positions[4]],  ' '};
   lcd.print(toPrint);
 
 }

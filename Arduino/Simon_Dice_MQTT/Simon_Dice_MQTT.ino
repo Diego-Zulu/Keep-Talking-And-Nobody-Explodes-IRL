@@ -11,7 +11,7 @@
 #define LED_GREEN   7
 #define LED_BLUE    5
 #define LED_YELLOW  3
-#define BIG_GREEN  2
+#define VICTORY_LED  2
 
 // Button pin definitions
 #define BUTTON_RED    10
@@ -36,7 +36,6 @@ ClientMQTT client(module);
 
 bool sendInputsToServerAndCheckIfOkay(int currentMove) {
 
-  waitingForResponse = true;
   string s = "";
   for (int i=0; i<currentMove; i++) {
     s += userInputs[i] + ",";
@@ -45,7 +44,7 @@ bool sendInputsToServerAndCheckIfOkay(int currentMove) {
   Serial.println("SEND");
   Serial.println(s.c_str());
   char* message = client.sendMessageAndWaitForResponse(s.c_str());
-  return strcmp(message, "OK") == 0
+  return strcmp(message, "OK") == 0;
 }
 
 int countCommasInMessage(char* message) {
@@ -66,7 +65,7 @@ void fillGameBoardWithColors(char* message) {
   int wordsExtracted = 0;
   string s = "";
 
-  for(int i = 0; message[i] != '\0' && wordsExtracted <= gameBoardLength; i++) {
+  for(int i = 0; message[i] != '\0' && wordsExtracted < gameBoardLength; i++) {
 
     if (message[i] == ',') {
        if(s == "R") gameBoard[wordsExtracted] = CHOICE_RED;
@@ -80,6 +79,11 @@ void fillGameBoardWithColors(char* message) {
     }
 
   }
+
+  if(s == "R") gameBoard[wordsExtracted] = CHOICE_RED;
+          else if(s == "G") gameBoard[wordsExtracted] = CHOICE_GREEN;
+          else if(s == "BLU") gameBoard[wordsExtracted] = CHOICE_BLUE;
+          else if(s == "Y") gameBoard[wordsExtracted] = CHOICE_YELLOW;
 }
 
 void f_Start(char* message) {
@@ -315,7 +319,7 @@ void buzz_sound(int buzz_length_ms, int buzz_delay_us)
 // Play the winner sound and lights
 void play_winner(void)
 {
-  digitalWrite(BIG_GREEN, HIGH);
+  digitalWrite(VICTORY_LED, HIGH);
   won = true;
 }
 

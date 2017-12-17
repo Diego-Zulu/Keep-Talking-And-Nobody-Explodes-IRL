@@ -2,7 +2,7 @@
 #include <Wire.h>
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
-
+#include <ClientMQTT.h>
 
 
 #define I2C_ADDR    0x3F
@@ -66,21 +66,78 @@ const char* ssid = "SaAP";
 const char* password = "santiago17";
 const char* mqtt_server = "192.168.43.204";
 const unsigned int port = 1883;
-const char* module = "The_Button";
+const char* module = "TheButton";
 ClientMQTT client(module);
 
+int * extractColorFromText(String color) {
+
+   if (color == "R") {
+      return red;
+   } else if (color == "O" ) {
+      return orange;
+   } else if (color == "Y" ) {
+      return yellow;
+   } else if (color == "GY" ) {
+      return green_yellow;
+   } else if (color == "G" ) {
+      return green;
+   } else if (color == "GBLU" ) {
+      return green_blue;
+   } else if (color == "SBLU" ) {
+      return skyblue;
+   } else if (color == "DSBLU" ) {
+      return darker_skyblue;
+   } else if (color == "BLU" ) {
+      return blue;
+   } else if (color == "PU" ) {
+      return purple;
+   } else if (color == "PI" ) {
+      return pink;
+   } else if (color == "M" ) {
+      return magenta;
+   } else if (color == "G" ) {
+      return grey;
+   } else if (color == "W" ) {
+      return white;
+   } else {
+      return off;
+  }
+}
+
 void f_Start(char* message) {
-  //RECIBIR COLORES STRIP Y BUTTON, Y PALABRA
-  //setColor("BUTTON", button_color);
-  //setColor("STRIP", strip_color);
-  //printToLcd(button_text);
-  //button_color = ;
-  //strip_color = ;
-  //button_text = ;
+
+  int wordsExtracted = 0;
+  String s = "";
+
+  for(int i = 0; message[i] != '\0' && wordsExtracted < 3; i++) {
+
+    if (message[i] == ',') {
+      //Button color
+       if (wordsExtracted == 0) {
+         copyColorArray(extractColorFromText(s), button_color);
+        //Button text
+       } else if (wordsExtracted == 1) {
+        button_text = s;
+       }
+      wordsExtracted++;
+      s = "";
+    } else {
+      s += message[i];
+    }
+  }
+
+  //Strip Color
+  copyColorArray(extractColorFromText(s), strip_color);
+  setColor("BUTTON", button_color);
+  printToLcd(button_text);
 }
 
 void f_End(char* message) {
   won = true;
+  digitalWrite(VICTORY_LED, LOW);
+  lcd.clear();
+  setColor("STRIP", off);
+  setColor("BUTTON", off);
 }
 
 void f_OnMessage(char* message) {
@@ -98,25 +155,17 @@ void f_OnMessage(char* message) {
 
 void setup()
 {
-
+  Serial.begin(9600);
+  client.connectWIFI(ssid, password);
+  client.connectMQTT(mqtt_server, port, f_Start, f_End, f_OnMessage);
   lcd.begin (16, 2);
   lcd.setBacklightPin(BACKLIGHT_PIN, POSITIVE);
   lcd.setBacklight(HIGH);
   lcd.home ();
 
-  Serial.begin(9600);
-
   pinMode(BUTTON, INPUT_PULLUP);
 
   pinMode(VICTORY_LED, OUTPUT);
-
-  //printToLcd(button_text);
-
-
-  //copyColorArray(blue, button_color);
-  //copyColorArray(red, strip_color);
-
-  //setColor("BUTTON", button_color);
 
   button_action_status = "";
 
@@ -125,6 +174,10 @@ void setup()
 
 void loop()
 {
+  if(!client.isListening()) {
+    client.startListeningLoop();
+  }
+  client.refresh();
   if (!won) {
     if (digitalRead(BUTTON) == LOW && button_action_status == "") {
       delay(HOLD_TIME);
@@ -144,8 +197,8 @@ void loop()
     }
 
     if (button_action_status != "") {
-        client.sendMessage(button_action_status);
-        client.refresh();
+        char* message = client.sendMessageAndWaitForResponse(button_action_status.c_str());
+        f_OnMessage(message);
     }
   }
 }
