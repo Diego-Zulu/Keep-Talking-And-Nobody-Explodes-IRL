@@ -1,5 +1,6 @@
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
+from ..songs import SoundEffectPlayer
 
 class Module(object):
 
@@ -48,11 +49,13 @@ class Module(object):
     def send_error(self):
         self.game.lose_life()
         self.send_message("ERROR")
+        SoundEffectPlayer.play_error()
 
     def send_ok(self):
         self.won = True
         self.game.winning()
         self.send_message("OK")
+        SoundEffectPlayer.play_ok()
 
     def send_start(self):
         self.send_message("START")

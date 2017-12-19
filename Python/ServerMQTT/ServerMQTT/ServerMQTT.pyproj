@@ -28,6 +28,9 @@
     <Compile Include="game\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+	<Compile Include="game\lcd_controller.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ktane\constants.py" />
     <Compile Include="game\game.py" />
     <Compile Include="ktane\modules.py">
@@ -40,6 +43,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ServerMQTT.py" />
+	<Compile Include="songs.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="game\" />

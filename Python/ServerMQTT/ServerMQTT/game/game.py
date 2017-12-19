@@ -1,5 +1,6 @@
 from ..ktane.modules import *
-from timer import *
+from ..songs import SoundEffectPlayer
+from .timer import *
 
 class Game(object):
 
@@ -31,12 +32,13 @@ class Game(object):
         for module in self.modules:
             module.on_start()
         print("-------------------")
-        self.timer = CountdownTimer(self.time, self.lose)
+        self.timer = CountdownTimer(self.time, self.lose, self.to_lcd)
         self.timer.start()
         self.active = True
 
     def end(self):
         print("--------END--------")
+        self.timer.stop = True
         for module in self.modules:
             module.on_end()
         print("-------------------")
@@ -70,10 +72,21 @@ class Game(object):
         print("-- GAME LOST --")
         if self.f_lose != None:
             self.f_lose()
+            SoundEffectPlayer.play_lose()
         self.end()
 
     def win(self):
         print("-- GAME WON --")
         if self.f_win() != None:
             self.f_win()
+            SoundEffectPlayer.play_win()
         self.end()
+        
+    def to_lcd(self):
+        x = []
+        st = self.strikes
+        l1 = "V:{0:02d} B:{1}".format(st, self.amount_batteries)
+        x.append(l1)
+        l2 = " S:{0} P:{1}".format(self.serial_number, self.lit)
+        x.append(l2)
+        return x

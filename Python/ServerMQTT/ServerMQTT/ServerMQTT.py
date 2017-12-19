@@ -1,12 +1,14 @@
-from game.game import Game
-from ktane.modules import Wires, TheButton, SimonSays, Password, MorseCode
+from .game.game import Game
+from .ktane.modules import Wires, TheButton, SimonSays, Password, MorseCode
 
 class GameFactory(object):
 
-    def builder():
+    @classmethod
+    def builder(cls):
         return GameBuilder()
 
-    def create():
+    @classmethod
+    def create(cls):
         return Game()
 
 class GameBuilder(object):

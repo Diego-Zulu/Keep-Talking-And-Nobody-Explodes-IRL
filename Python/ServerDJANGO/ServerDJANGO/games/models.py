@@ -12,9 +12,9 @@ class Game(models.Model):
     difficulty = models.IntegerField(validators = [validators.MinValueValidator(1), validators.MaxValueValidator(5)])
 
     time = models.IntegerField(validators = [validators.MinValueValidator(30), validators.MaxValueValidator(600)])
-    strikes = models.IntegerField(validators = [validators.MinValueValidator(1), validators.MaxValueValidator(5)])
+    strikes = models.IntegerField(validators = [validators.MinValueValidator(1), validators.MaxValueValidator(99)])
 
-    amount_batteries = models.IntegerField(default = 0)
+    amount_batteries = models.IntegerField(validators = [validators.MinValueValidator(1), validators.MaxValueValidator(9)])
     lit = models.ForeignKey(Lit, on_delete = models.CASCADE)
     serial_number = models.ForeignKey(SerialNumber, on_delete = models.CASCADE)
 

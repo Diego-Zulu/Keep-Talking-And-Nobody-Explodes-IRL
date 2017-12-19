@@ -9,7 +9,7 @@ class Color(models.Model):
         return '{0} - {1}'.format(self.name, self.type)
 
 class SerialNumber(models.Model):
-    name = models.CharField(max_length = 6)
+    name = models.CharField(max_length = 6, validators = [validators.MinLengthValidator(6)])
 
     def __str__(self):
         return self.name
