@@ -13,6 +13,7 @@ class SoundEffectPlayer(object):
     @classmethod
     def play_lose(cls):
         play_song(cls._player, cls._lose_media)
+        pass
         
     @classmethod
     def play_win(cls):

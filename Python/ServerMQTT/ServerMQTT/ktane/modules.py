@@ -338,10 +338,10 @@ class Password(Module):
             self.send_error()
 
     def start(self):
-        self.send_message(self.password)
+        self.send_message(self.password.upper())
 
     def verify_password(self, attempt):
-        return attempt == self.password
+        return attempt.upper() == self.password.upper()
 
 #########################################
 class TheButton(Module):
@@ -385,7 +385,7 @@ class TheButton(Module):
             return consts.CODE_UNREACHABLE
 
     def first_press_logic(self, action):
-        if self.button_says == 'ABORT' and self.button_color == 'BLU' and action == 'HOLD':
+        if self.button_says == 'ABORT' and self.button_color == 'B' and action == 'HOLD':
             return consts.CODE_HOLDING
         elif self.amount_batteries > 1 and self.button_says == 'DETONATE' and action == 'PRESS':
             return consts.CODE_FINISHED
@@ -405,13 +405,13 @@ class TheButton(Module):
             return consts.CODE_IGNORE
 
     def holding_logic(self, current_countdown):
-        if self.strip_color == 'BLU' and self.countdown_includes_number(current_countdown, '4'):
+        if self.strip_color == 'B' and self.countdown_includes_number(current_countdown, '4'):
             return consts.CODE_FINISHED
         elif self.strip_color == 'W' and self.countdown_includes_number(current_countdown, '1'):
             return consts.CODE_FINISHED
         elif self.strip_color == 'Y' and self.countdown_includes_number(current_countdown, '5'):
             return consts.CODE_FINISHED
-        elif (self.strip_color != 'BLU' and self.strip_color != 'W' and self.strip_color != 'Y'
+        elif (self.strip_color != 'B' and self.strip_color != 'W' and self.strip_color != 'Y'
               and self.countdown_includes_number(current_countdown, '1')):
             return consts.CODE_FINISHED
         else:

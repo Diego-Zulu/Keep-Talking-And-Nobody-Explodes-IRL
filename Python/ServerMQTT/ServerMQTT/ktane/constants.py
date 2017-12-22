@@ -9,7 +9,7 @@ POSIBLE_INDICATORS = ['SND', 'CLR', 'CAR', 'IND', 'FRQ', 'SIG',
 
 THE_BUTTON_TEXTS = ['ABORT', 'DETONATE', 'HOLD']
 
-BLUE = 'B'
+BLUE = 'BLU'
 RED = 'R'
 YELLOW = 'Y'
 GREEN = 'G'

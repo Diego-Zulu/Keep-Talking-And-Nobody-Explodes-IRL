@@ -7,20 +7,20 @@
 #define CHOICE_BLUE (1 << 2)
 #define CHOICE_YELLOW   (1 << 3)
 
-#define LED_RED     5
+#define LED_RED     12
 #define LED_GREEN   13
-#define LED_BLUE    0
+#define LED_BLUE    3
 #define LED_YELLOW  14
 #define VICTORY_LED  16
 
 // Button pin definitions
 #define BUTTON_RED    4
-#define BUTTON_GREEN  3
+#define BUTTON_GREEN  0
 #define BUTTON_BLUE   2
-#define BUTTON_YELLOW 12
+#define BUTTON_YELLOW 5
 //15 boton green no anda, boton yellow 12 no anda
 
-#define ENTRY_TIME_LIMIT   3000 //Amount of time to press a button before game times out. 3000ms = 3 sec
+#define ENTRY_TIME_LIMIT 3000 //Amount of time to press a button before game times out. 3000ms = 3 sec
 
 byte gameBoard[32]; //Contains the combination of buttons as we advance
 int gameBoardLength = 32;                                                                                                                                                                                                                                                       
@@ -28,9 +28,9 @@ string userInputs[32];
 byte gameRound = 0; //Counts the number of succesful rounds the player has made it through
 bool won = false;
 
-const char* ssid = "Base 2.4GHz";
-const char* password = "Aguara6585";
-const char* mqtt_server = "192.168.0.110";
+const char* ssid = "SaAP";
+const char* password = "santiago17";
+const char* mqtt_server = "192.168.43.204";
 const unsigned int port = 1883;
 const char* module = "SimonSays";
 ClientMQTT client(module);
@@ -58,7 +58,6 @@ int countCommasInMessage(char* message) {
     }
 
   }
-  
   return count;
 }
 
@@ -88,12 +87,11 @@ void fillGameBoardWithColors(char* message) {
 }
 
 void f_Start(char* message) {
-  
-   Serial.println("FSTART");
- Serial.println(message);
+  Serial.begin(9600);
+  Serial.println("FSTART");
+  Serial.println(message);
   int gameBoardLength = countCommasInMessage(message) + 1;
   fillGameBoardWithColors(message);
-  
   won = false;
   digitalWrite(VICTORY_LED, LOW);
 }
@@ -127,8 +125,8 @@ void setup()
   pinMode(LED_YELLOW, OUTPUT);
   pinMode(VICTORY_LED, OUTPUT);
   digitalWrite(VICTORY_LED, LOW);
+  
   won = true;
-
 }
 
 void loop()
@@ -137,60 +135,46 @@ void loop()
     client.startListeningLoop();
   }
   client.refresh();
-
   
   ///setLEDs(CHOICE_RED | CHOICE_GREEN | CHOICE_BLUE | CHOICE_YELLOW); 
   //delay(1000);
   //setLEDs(CHOICE_OFF); 
   //delay(250);
 
-    if (!won && play_memory() == true) {
-      play_winner(); // Player won, play winner tones
-      Serial.println("WIN");
-    }
+  if (!won && play_memory() == true) {
+    play_winner(); // Player won, play winner tones
+    Serial.println("WIN");
+  }
 }
 
 boolean play_memory(void)
 {
-  Serial.println("MEM");
   gameRound = 0; // Reset the game to the beginning
-
   while (gameRound < gameBoardLength) 
   {
     gameRound++;
-    
-
     playMoves(); // Play back the current game board
-    Serial.println("MEM1");
-
     // Then require the player to repeat the sequence.
     for (byte currentMove = 0 ; currentMove < gameRound ; currentMove++)
     {
       client.refresh();
-
       byte choice = wait_for_button(); // See what button the user presses
-      Serial.println("MEM2");
       if (choice == 0) {
         currentMove--; 
         playMoves();
       } else {
-         //if (choice != correctInputs[currentMove]) return false; // If the choice is incorect, player loses
-          Serial.println("MEM3");
-         if(choice == CHOICE_RED) userInputs[currentMove] = "R";
-          else if(choice == CHOICE_GREEN) userInputs[currentMove] = "G";
-          else if(choice == CHOICE_BLUE) userInputs[currentMove] = "B";
-          else if(choice == CHOICE_YELLOW) userInputs[currentMove] = "Y";
-
-          if (!sendInputsToServerAndCheckIfOkay(currentMove)) {
-            return false;
-          }
-          Serial.println("MEM4");
+        //if (choice != correctInputs[currentMove]) return false; // If the choice is incorect, player loses
+        if(choice == CHOICE_RED) userInputs[currentMove] = "R";
+        else if(choice == CHOICE_GREEN) userInputs[currentMove] = "G";
+        else if(choice == CHOICE_BLUE) userInputs[currentMove] = "B";
+        else if(choice == CHOICE_YELLOW) userInputs[currentMove] = "Y";
+        if (!sendInputsToServerAndCheckIfOkay(currentMove)) {
+          return false;
+        }
       }
     }
-
     delay(1000); // Player was correct, delay before playing moves
   }
-
   return true; // Player made it through all the rounds to win!
 }
 
@@ -200,7 +184,6 @@ void playMoves(void)
   for (byte currentMove = 0 ; currentMove < gameRound ; currentMove++) 
   {
     toner(gameBoard[currentMove], 150);
-
     // Wait some amount of time between button playback
     // Shorten this to make game harder
     delay(150); // 150 works well. 75 gets fast.
@@ -239,38 +222,47 @@ void setLEDs(byte leds)
 // Returns one of LED colors (LED_RED, etc.) if successful, 0 if timed out
 byte wait_for_button(void)
 {
+  Serial.print("A");
   long startTime = millis(); // Remember the time we started the this loop
-  Serial.println("W1");
-
-  while ( (millis() - startTime) < ENTRY_TIME_LIMIT) // Loop until too much time has passed
+  while((millis() - startTime) < ENTRY_TIME_LIMIT) // Loop until too much time has passed
   {
+    Serial.println("B");
     byte button = checkButton();
-    Serial.println("W2");
+    Serial.println("C");
     if (button != CHOICE_NONE)
     { 
+      Serial.print("D");
       toner(button, 150); // Play the button the user just pressed
-      Serial.println("W3");
+      Serial.print("E");
       while(checkButton() != CHOICE_NONE) ;  // Now let's wait for user to release button
-
+      Serial.print("F");
       delay(10); // This helps with debouncing and accidental double taps
-      Serial.println("W4");
+      Serial.print("G");
       return button;
+      Serial.print("H");
     }
-
+    Serial.println("R");
   }
-
+  Serial.print("J");
   return CHOICE_NONE; // If we get here, we've timed out!
 }
 
 // Returns a '1' bit in the position corresponding to CHOICE_RED, CHOICE_GREEN, etc.
 byte checkButton(void)
 {
-  Serial.println("c1");
-  if (digitalRead(BUTTON_RED) == 0) { Serial.println("red"); return(CHOICE_RED); 
-  } else if (digitalRead(BUTTON_GREEN) == 0) { Serial.println("green"); return(CHOICE_GREEN); 
-  } else if (digitalRead(BUTTON_BLUE) == 0) { Serial.println("blue"); return(CHOICE_BLUE); 
-  } else if (digitalRead(BUTTON_YELLOW) == 0) { Serial.println("yellow"); return(CHOICE_YELLOW);}
-  Serial.println("c2");
+  if (digitalRead(BUTTON_RED) == 0) { 
+    Serial.println("red"); 
+    return(CHOICE_RED); 
+  } else if (digitalRead(BUTTON_GREEN) == 0) { 
+    Serial.println("green"); 
+    return(CHOICE_GREEN); 
+  } else if (digitalRead(BUTTON_BLUE) == 0) { 
+    Serial.println("blue"); 
+    return(CHOICE_BLUE); 
+  } else if (digitalRead(BUTTON_YELLOW) == 0) { 
+    Serial.println("yellow"); 
+    return(CHOICE_YELLOW);
+  }
   return(CHOICE_NONE); // If no button is pressed, return none
 }
 
@@ -282,7 +274,6 @@ byte checkButton(void)
 void toner(byte which, int buzz_length_ms)
 {
   setLEDs(which); //Turn on a given LED
-
   //Play the sound associated with the given LED
   switch(which) 
   {
@@ -299,7 +290,6 @@ void toner(byte which, int buzz_length_ms)
     buzz_sound(buzz_length_ms, 638); 
     break;
   }
-
   setLEDs(CHOICE_OFF); // Turn off all LEDs
 }
 
@@ -308,16 +298,13 @@ void buzz_sound(int buzz_length_ms, int buzz_delay_us)
 {
   // Convert total play time from milliseconds to microseconds
   long buzz_length_us = buzz_length_ms * (long)1000;
-
   // Loop until the remaining play time is less than a single buzz_delay_us
   while (buzz_length_us > (buzz_delay_us * 2))
   {
     buzz_length_us -= buzz_delay_us * 2; //Decrease the remaining play time
-
     //digitalWrite(BUZZER1, LOW);
     //digitalWrite(BUZZER2, HIGH);
     delayMicroseconds(buzz_delay_us);
-
     //digitalWrite(BUZZER1, HIGH);
     //digitalWrite(BUZZER2, LOW);
     delayMicroseconds(buzz_delay_us);

@@ -36,7 +36,7 @@ class Game(models.Model):
             i = i - 1
         if self.simon_says_module is None:
             i = i - 1
-        if i != 5:
+        if i < 4:
             raise exceptions.ValidationError('They have to be exactly 5 modules.')
         super(Game, self).clean()
 

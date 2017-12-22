@@ -13,20 +13,13 @@
 #define D6_pin  6
 #define D7_pin  7
 
-#define BACK_BTN 2
-#define FORW_BTN 3
-#define ACCEPT_BTN 6
-#define CODE_LED 4
-#define BIG_LED 5
-#define FREQUENCIES 16
-
-#define DOWN_0_BTN 7
-#define DOWN_1_BTN 8
-#define DOWN_2_BTN 9
-#define DOWN_3_BTN 10
-#define DOWN_4_BTN 11
-#define VICTORY_LED 12
-#define INPUT_ANSWER 13
+#define DOWN_0_BTN D3
+#define DOWN_1_BTN D4
+#define DOWN_2_BTN D5
+#define DOWN_3_BTN D6
+#define DOWN_4_BTN D7
+#define VICTORY_LED D8
+#define INPUT_ANSWER D9
 
 #define BTN_PRESS_DELAY 300
 #define char_amount 5
@@ -49,7 +42,7 @@ const char* module = "Password";
 ClientMQTT client(module);
 
 void f_Start(char* message) {
-  
+  solution = "";
   solution = String(solution + message);
   won = false;
   digitalWrite(VICTORY_LED, LOW);
@@ -130,12 +123,15 @@ void shuffle(char pos[]) {
 }
 
 void loop() {
-
+  if(!client.isListening()) {
+    client.startListeningLoop();
+  }
+  client.refresh();
   if (!won) {
     if (digitalRead(DOWN_0_BTN) == 0) {
 
       int newPos = positions[0] - 1;
-      if (newPos < 0 ) {
+      if (newPos < 0 ) {  
         newPos = char_amount - 1;
       }
       positions[0] = newPos;
@@ -169,7 +165,6 @@ void loop() {
       printToLcd();
       delay(BTN_PRESS_DELAY);
     } else if (digitalRead(DOWN_4_BTN) == 0) {
-
       int newPos = positions[4] - 1;
       if (newPos < 0 ) {
         newPos = char_amount - 1;
@@ -178,23 +173,18 @@ void loop() {
       printToLcd();
       delay(BTN_PRESS_DELAY);
     } else if (digitalRead(INPUT_ANSWER) == 0) {
-     /* if (GetWord() == solution) {
-        won = true;
-        digitalWrite(VICTORY_LED, HIGH);
-      }*/
-       string s = GetWord();
-       Serial.println("SEND");
-       Serial.println(s.c_str());
-       client.sendMessage(s.c_str());
-      
-      
-      delay(BTN_PRESS_DELAY);
+     string s = GetWord();
+     Serial.println("SEND");
+     Serial.println(s.c_str());
+     client.sendMessage(s.c_str());
+     client.refresh();
+     delay(BTN_PRESS_DELAY);
     }
   }
 }
 
 string GetWord() {
-  char toPrint[5] = {posibilities[0][positions[0]], posibilities[1][positions[1]], posibilities[2][positions[2]], posibilities[3][positions[3]], posibilities[4][positions[4]]};
+  char toPrint[6] = {posibilities[0][positions[0]], posibilities[1][positions[1]], posibilities[2][positions[2]], posibilities[3][positions[3]], posibilities[4][positions[4]], '\0'};
   return toPrint;
 }
 

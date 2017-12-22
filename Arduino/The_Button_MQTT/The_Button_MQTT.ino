@@ -4,7 +4,6 @@
 #include <LiquidCrystal_I2C.h>
 #include <ClientMQTT.h>
 
-
 #define I2C_ADDR    0x3F
 #define BACKLIGHT_PIN     3
 #define En_pin  2
@@ -15,24 +14,24 @@
 #define D6_pin  6
 #define D7_pin  7
 
-#define STRIP_LED_BLUE 3
-#define STRIP_LED_GREEN 5
-#define STRIP_LED_RED 6
+#define STRIP_LED_BLUE D5
+#define STRIP_LED_GREEN D4
+#define STRIP_LED_RED D3
 
-#define BUTTON_LED_BLUE 9
-#define BUTTON_LED_GREEN 10
-#define BUTTON_LED_RED 11
+#define BUTTON_LED_BLUE D8
+#define BUTTON_LED_GREEN D7
+#define BUTTON_LED_RED D6
 
-#define BUTTON 2
-#define VICTORY_LED 8
+#define BUTTON D10
+#define VICTORY_LED D9
 
-#define HOLD_TIME 300
+#define HOLD_TIME 500
 
 #define YELLOW_CODE "Y"
 #define WHITE_CODE "W"
 #define GREEN_CODE "G"
 #define RED_CODE "R"
-#define BLUE_CODE "BLU"
+#define BLUE_CODE "B"
 
 LiquidCrystal_I2C  lcd(I2C_ADDR, En_pin, Rw_pin, Rs_pin, D4_pin, D5_pin, D6_pin, D7_pin);
 
@@ -81,13 +80,13 @@ int * extractColorFromText(String color) {
       return green_yellow;
    } else if (color == "G" ) {
       return green;
-   } else if (color == "GBLU" ) {
+   } else if (color == "GB" ) {
       return green_blue;
-   } else if (color == "SBLU" ) {
+   } else if (color == "SB" ) {
       return skyblue;
-   } else if (color == "DSBLU" ) {
+   } else if (color == "DSB" ) {
       return darker_skyblue;
-   } else if (color == "BLU" ) {
+   } else if (color == "B" ) {
       return blue;
    } else if (color == "PU" ) {
       return purple;
@@ -129,7 +128,10 @@ void f_Start(char* message) {
   //Strip Color
   copyColorArray(extractColorFromText(s), strip_color);
   setColor("BUTTON", button_color);
+  setColor("STRIP", off);
+  button_action_status = "";
   printToLcd(button_text);
+  won = false;
 }
 
 void f_End(char* message) {
@@ -145,7 +147,6 @@ void f_OnMessage(char* message) {
     digitalWrite(VICTORY_LED, HIGH);
     won = true;
   } else if (strcmp(message, "HOLDING") == 0) {
-    button_action_status = "HOLD";
     setColor("STRIP", strip_color);
   } else if (strcmp(message, "ERROR") == 0) {
     button_action_status = "";
@@ -158,13 +159,19 @@ void setup()
   Serial.begin(9600);
   client.connectWIFI(ssid, password);
   client.connectMQTT(mqtt_server, port, f_Start, f_End, f_OnMessage);
-  lcd.begin (16, 2);
+  lcd.begin(16, 2);
   lcd.setBacklightPin(BACKLIGHT_PIN, POSITIVE);
   lcd.setBacklight(HIGH);
-  lcd.home ();
+  lcd.home();
 
   pinMode(BUTTON, INPUT_PULLUP);
+  pinMode(BUTTON_LED_BLUE, OUTPUT);
+  pinMode(BUTTON_LED_GREEN, OUTPUT);
+  pinMode(BUTTON_LED_RED, OUTPUT);
 
+  pinMode(STRIP_LED_BLUE, OUTPUT);
+  pinMode(STRIP_LED_GREEN, OUTPUT);
+  pinMode(STRIP_LED_RED, OUTPUT);
   pinMode(VICTORY_LED, OUTPUT);
 
   button_action_status = "";
@@ -176,30 +183,33 @@ void loop()
 {
   if(!client.isListening()) {
     client.startListeningLoop();
-  }
+  }  bool sendDataThisLoop = false;
   client.refresh();
   if (!won) {
     if (digitalRead(BUTTON) == LOW && button_action_status == "") {
       delay(HOLD_TIME);
-      
       if (digitalRead(BUTTON) == LOW) {
         button_action_status = "HOLD";
-        
         Serial.println(button_action_status);
       } else {
         button_action_status = "PRESS";
         Serial.println(button_action_status);
       }
+      sendDataThisLoop = true;
     } else if (digitalRead(BUTTON) == HIGH && button_action_status == "HOLD") {
       button_action_status = "RELEASE";
-      
+      sendDataThisLoop = true;
       Serial.println(button_action_status);
     }
-
-    if (button_action_status != "") {
+    if (sendDataThisLoop) {
+        Serial.println("---------------");
+        Serial.println(button_action_status);
+        Serial.println("---------------");
         char* message = client.sendMessageAndWaitForResponse(button_action_status.c_str());
+        Serial.println("---------------");
         f_OnMessage(message);
-    }
+        Serial.println("---------------");
+      }
   }
 }
 

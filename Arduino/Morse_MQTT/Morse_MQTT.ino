@@ -17,11 +17,11 @@
 #define D6_pin  6
 #define D7_pin  7
 
-#define BACK_BTN 14
-#define FORW_BTN 12
-#define ACCEPT_BTN 13
-#define CODE_LED 15
-#define BIG_LED 3
+#define BACK_BTN D3
+#define FORW_BTN D4
+#define ACCEPT_BTN D5
+#define CODE_LED D7
+#define BIG_LED D6
 #define FREQUENCIES 16
 
 #define dotLen 400     // length of the morse code 'dot'
@@ -59,9 +59,9 @@ bool waitingForServer = false;
 LinkedList<String> *buttonsQueue = new LinkedList<String>();
 LinkedList<String> *morseQueue = new LinkedList<String>();
 
-const char* ssid = "ASUS";
-const char* password = "M#V#23622607";
-const char* mqtt_server = "192.168.2.150";
+const char* ssid = "SaAP";
+const char* password = "santiago17";
+const char* mqtt_server = "192.168.43.204";
 const unsigned int port = 1883;
 const char* module = "MorseCode";
 ClientMQTT client(module);
@@ -86,8 +86,8 @@ void f_End(char* message) {
   started = false;
   waitingForServer = false;
   digitalWrite(CODE_LED, LOW);
-}
   digitalWrite(BIG_LED, LOW);
+}
 
 void f_OnMessage(char* message) {
   Serial.println("ONMESSAGE");
