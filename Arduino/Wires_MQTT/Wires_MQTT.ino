@@ -4,11 +4,11 @@
 #define FIRST_WIRE 5
 #define SECOND_WIRE 4
 #define THIRD_WIRE 0
-#define FOURTH_WIRE 2
-#define FIFTH_WIRE 14
-#define SIXTH_WIRE 12
+#define FOURTH_WIRE 14
+#define FIFTH_WIRE 12
+#define SIXTH_WIRE 13
 
-#define VICTORY_LED 13
+#define VICTORY_LED 15
 #define TOTAL_WIRES 6
 
 int wiresPos[] = { FIRST_WIRE, SECOND_WIRE, THIRD_WIRE, FOURTH_WIRE, FIFTH_WIRE, SIXTH_WIRE };
@@ -41,6 +41,7 @@ void f_Start(char* message) {
 
 void f_End(char* message) {
   won = true;
+  digitalWrite(VICTORY_LED, LOW);
 }
 
 void f_OnMessage(char* message) {
@@ -52,6 +53,7 @@ void f_OnMessage(char* message) {
 
 void setup() {
   Serial.begin(9600);
+  Serial.println("HOLA");
   client.connectWIFI(ssid, password);
   client.connectMQTT(mqtt_server, port, f_Start, f_End, f_OnMessage);
   
@@ -59,7 +61,7 @@ void setup() {
   for (int i = 0; i < TOTAL_WIRES; i++) {
     pinMode(wiresPos[i], INPUT_PULLUP);
   }
-  won = true;
+  //won = true;
 }
 
 void loop() {

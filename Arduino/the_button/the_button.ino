@@ -3,8 +3,7 @@
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
 
-#define SDA_PIN 0
-#define SCL_PIN 2
+
 
 #define I2C_ADDR    0x3F
 #define BACKLIGHT_PIN     3
@@ -24,8 +23,8 @@
 #define BUTTON_LED_GREEN 10
 #define BUTTON_LED_RED 11
 
-#define BUTTON 12
-#define VICTORY_LED 13
+#define BUTTON 2
+#define VICTORY_LED 8
 
 #define HOLD_TIME 300
 
@@ -80,7 +79,7 @@ void setup()
   printToLcd(button_text);
 
 
-  copyColorArray(white, button_color);
+  copyColorArray(blue, button_color);
   copyColorArray(red, strip_color);
 
   setColor("BUTTON", button_color);
@@ -106,6 +105,8 @@ void loop()
       }
     } else if (digitalRead(BUTTON) == HIGH && button_action_status == "HOLD") {
       button_action_status = "RELEASE";
+      won = true;
+      digitalWrite(VICTORY_LED, HIGH);
       Serial.println(button_action_status);
     }
   }

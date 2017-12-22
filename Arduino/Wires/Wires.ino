@@ -1,14 +1,13 @@
 #include <LinkedList.h>
 
-#define FIRST_WIRE 5
-#define SECOND_WIRE 4
-#define THIRD_WIRE 0
-#define FOURTH_WIRE 2
-#define FIFTH_WIRE 14
-#define SIXTH_WIRE 12
+#define FIRST_WIRE 2
+#define SECOND_WIRE 3
+#define THIRD_WIRE 4
+#define FOURTH_WIRE 5
+#define FIFTH_WIRE 6
+#define SIXTH_WIRE 7
 
-#define LAST_WIRE FIRST_WIRE+5
-#define VICTORY_LED 13
+#define VICTORY_LED 8
 #define TOTAL_WIRES 6
 
 int wiresPos[] = {FIRST_WIRE, SECOND_WIRE, THIRD_WIRE, FOURTH_WIRE, FIFTH_WIRE, SIXTH_WIRE};
@@ -23,14 +22,16 @@ LinkedList<int> *wiresActive = new LinkedList<int>();
 
 void setup() {
   Serial.begin(9600);
-  
+
   pinMode(VICTORY_LED, OUTPUT);
   won = false;
+  wires_amount = 3;
   int correct_wire_count = 2;
-  int correct_wire = FIRST_WIRE;
 
-  for (int i = 0; i <= TOTAL_WIRES && wiresActive->size() < wires_amount; i++) {
+
+  for (int i = 0; i < TOTAL_WIRES && wiresActive->size() < wires_amount; i++) {
     pinMode(wiresPos[i], INPUT_PULLUP);
+      Serial.println(wiresPos[i]);
     if (digitalRead(wiresPos[i]) == LOW) {
       wiresActive->add(wiresPos[i]);
       if (correct_wire_count == 0) {
@@ -39,16 +40,18 @@ void setup() {
       correct_wire_count--;
     }
   }
+   Serial.println(correct_wire);
 
 }
 
 void loop() {
+
   if (!won) {
     winsThisRound = false;
     errorThisRound = false;
 
     for (int i = 0; i < wiresActive->size() && !errorThisRound; i++) {
-      Serial.println(wiresActive->get(i));
+          Serial.println(correct_wire);
       if (digitalRead(wiresActive->get(i)) == HIGH) {
         if (correct_wire == wiresActive->get(i)) {
           winsThisRound = true;

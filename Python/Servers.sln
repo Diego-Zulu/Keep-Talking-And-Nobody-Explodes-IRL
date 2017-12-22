@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2006
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ServerDJANGO", "ServerDJANGO\ServerDJANGO\ServerDJANGO.pyproj", "{A51E5BBE-0578-4C8B-8407-FA40F9ECEAF1}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ServerMQTT", "ServerMQTT\ServerMQTT\ServerMQTT.pyproj", "{931656D1-C9A6-49E7-BC3D-88AA8D940FC2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A51E5BBE-0578-4C8B-8407-FA40F9ECEAF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A51E5BBE-0578-4C8B-8407-FA40F9ECEAF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A51E5BBE-0578-4C8B-8407-FA40F9ECEAF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A51E5BBE-0578-4C8B-8407-FA40F9ECEAF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{931656D1-C9A6-49E7-BC3D-88AA8D940FC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{931656D1-C9A6-49E7-BC3D-88AA8D940FC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {884914E5-DA35-44C5-9ADA-E456FAA9C43C}
+	EndGlobalSection
+EndGlobal

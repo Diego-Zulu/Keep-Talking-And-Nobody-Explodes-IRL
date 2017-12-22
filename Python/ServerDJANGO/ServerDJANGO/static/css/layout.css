@@ -1,0 +1,242 @@
+/* universal */
+html {
+    height: 100%;
+}
+
+.container {
+    height: 100%;
+}
+
+body {
+    padding-top: 60px;
+    height: 100%;
+}
+
+section {
+    overflow: auto;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.center {
+    text-align: center;
+}
+    .center h1 {
+        margin-bottom: 10px;
+    }
+
+/* typography */
+h1, h2, h3, h4, h5, h6 {
+    line-height: 1;
+}
+
+h1 {
+    font-size: 3em;
+    letter-spacing: -2px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.2em;
+    letter-spacing: -1px;
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: normal;
+    color: #777777;
+}
+
+p {
+    font-size: 1.1em;
+    line-height: 1.7em;
+}
+
+/* header */
+#logo {
+    float: left;
+    margin-right: 10px;
+    font-size: 1.7em;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    padding-top: 9px;
+    font-weight: bold;
+}
+    #logo:hover {
+        color: white;
+        text-decoration: none;
+    }
+
+/* footer */
+footer {
+    margin-top: 45px;
+    padding-top: 5px;
+    border-top: 1px solid #eaeaea;
+    color: #777777;
+}
+    footer a {
+        color: #555555;
+    }
+        footer a:hover {
+            color: #222222;
+        }
+    footer small {
+        float: left;
+    }
+    footer ul {
+        float: right;
+        list-style: none;
+    }
+        footer ul li {
+            float: left;
+            margin-left: 15px;
+        }
+
+/* sidebar */
+aside section.user_info {
+    margin-top: 20px;
+}
+aside section {
+    padding: 10px 0;
+    margin-top: 20px;
+}
+    aside section:first-child {
+        border: 0;
+        padding-top: 0;
+    }
+    aside section span {
+        display: block;
+        margin-bottom: 3px;
+        line-height: 1;
+    }
+    aside section h1 {
+        font-size: 1.4em;
+        text-align: left;
+        letter-spacing: -1px;
+        margin-bottom: 3px;
+        margin-top: 0px;
+    }
+
+.gravatar {
+    float: left;
+    margin-right: 10px;
+}
+
+.gravatar_edit {
+    margin-top: 15px;
+}
+
+/* forms */
+input, textarea, select, .uneditable-input {
+    border: 1px solid #bbb;
+    width: 100%;
+    margin-bottom: 15px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+input {
+    height: auto !important;
+}
+
+#error_explanation {
+    color: red;
+}
+    #error_explanation ul {
+        color: red;
+        margin: 0 0 30px 0;
+    }
+
+.field_with_errors .form-control {
+    color: #a94442;
+}
+
+/* miscellaneous */
+.debug_dump {
+    clear: both;
+    float: left;
+    width: 100%;
+    margin-top: 45px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.ui-autocomplete {
+    cursor: default;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    float: left;
+    display: none;
+    min-width: 160px;
+    padding: 4px 0;
+    margin: 0 0 10px 25px;
+    list-style: none;
+    background-color: #ffffff;
+    border-color: #ccc;
+    border-color: rgba(0, 0, 0, 0.2);
+    border-style: solid;
+    border-width: 1px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+    *border-right-width: 2px;
+    *border-bottom-width: 2px;
+}
+
+.ui-menu-item > a.ui-corner-all {
+    display: block;
+    padding: 3px 15px;
+    clear: both;
+    font-weight: normal;
+    line-height: 18px;
+    color: #555555;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.ui-state-hover, .ui-state-active {
+    color: #ffffff;
+    text-decoration: none;
+    background-color: #0088cc;
+    border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    background-image: none;
+}
+
+.ui-helper-hidden-accessible {
+    display: none;
+}
+
+#map {
+    margin-top: 1%;
+    height: 45%;
+    width: 60%;
+}
+
+.map-center {
+    margin: auto;
+}
+
+.align-with-map {
+    width: 60%;
+    margin: auto;
+    margin-top: 1%;
+}
+
+.rounded-corners {
+    border-radius: 15px;
+    border: 2px solid grey;
+}

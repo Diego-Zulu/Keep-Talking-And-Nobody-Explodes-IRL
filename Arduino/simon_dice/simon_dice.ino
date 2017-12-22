@@ -130,21 +130,21 @@
 #define CHOICE_YELLOW   (1 << 3)
 
 #define LED_RED     9
-#define LED_GREEN   11
-#define LED_BLUE    8
-#define LED_YELLOW  10
-#define BIG_GREEN  12
+#define LED_GREEN   7
+#define LED_BLUE    5
+#define LED_YELLOW  3
+#define BIG_GREEN  2
 
 // Button pin definitions
-#define BUTTON_RED    3
-#define BUTTON_GREEN  5
-#define BUTTON_BLUE   2
+#define BUTTON_RED    10
+#define BUTTON_GREEN  8
+#define BUTTON_BLUE   6
 #define BUTTON_YELLOW 4
 
 
 // Buzzer pin definitions
-#define BUZZER1  6
-#define BUZZER2  7
+#define BUZZER1  11
+#define BUZZER2  12
 
 // Define game parameters
 #define ROUNDS_TO_WIN      6 //Number of rounds to succesfully remember before you win. 13 is do-able.
@@ -264,7 +264,14 @@ void add_to_moves(void)
   else if(newButton == 3) newButton = CHOICE_YELLOW;
 
   gameBoard[gameRound] = newButton; // Add this new button to the game array
-  correctInputs[gameRound++] = newButton;
+  correctInputs[gameRound++] = debug(newButton);
+}
+
+int debug(int button) {
+  if(button == CHOICE_RED)return CHOICE_BLUE;
+  else if(button == CHOICE_GREEN) return CHOICE_YELLOW;
+  else if(button == CHOICE_BLUE) return CHOICE_RED;
+  else if(button == CHOICE_YELLOW) return CHOICE_GREEN;
 }
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

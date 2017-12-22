@@ -1,0 +1,65 @@
+{% extends 'layouts/layout.html' %}
+
+{% block title %}
+    Jugar!
+{% endblock %}
+
+{% block content %}
+    <div class="center jumbotron">
+        <div class="btn-group btn-group-lg">
+            <div id="game_on">
+                <h1>Jugar!</h1>
+                <h2>Selecciona un Nivel</h2>
+                <div class="input-group col-md-6 col-md-offset-3">
+                    <select id="input_game" class="form-control input-lg"></select>
+                    <span class="btn-group btn-group-lg input-group-btn">
+                        <button id="button_start" class="btn btn-success">Iniciar</button>
+                    </span>
+                </div>
+            </div> 
+            <div id="game_off">
+                <h1>Juego en curso</h1>
+                <h2>Finaliza en:</h2>
+                <div class="input-group col-md-6 col-md-offset-3">
+                    <span class="btn-group btn-group-lg input-group-btn">
+                        <button id="button_restart" class="btn btn-primary">Reiniciar</button>
+                    </span>
+                    <input type="text" id="input_text" class="form-control input-lg text-center" disabled />
+                    <span class="btn-group btn-group-lg input-group-btn">
+                        <button id="button_end" class="btn btn-danger">Finalizar</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="table_game_div">
+        <h1>Nivel:</h1>
+        <table id="table_game" class="table table-striped table-responsive">
+        <thead>
+            <tr>
+                <th class="text-center">Nombre</th>
+                <th class="text-center">Dificultad (1 a 5)</th>
+                <th class="text-center">Tiempo (Segundos)</th>
+                <th class="text-center">Vidas</th>
+            </tr>
+        </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {% load staticfiles %}
+    <script>
+        URL_START_GAME = "{% url 'games:start' 0 %}";
+        URL_END_GAME = "{% url 'games:end' %}";
+        URL_RESTART_GAME = "{% url 'games:restart' %}";
+        URL_CURRENT_GAME = "{% url 'games:current' %}";
+        URL_GAMES_GET_ALL = "{% url 'games:get_all' %}";
+    </script>
+    <script type="text/javascript" src="{% static 'js/play.js' %}"></script>
+    <script>
+        setGameView(false);
+    </script>
+{% endblock %}
